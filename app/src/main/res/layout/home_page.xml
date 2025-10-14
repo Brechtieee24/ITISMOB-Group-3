@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#B0C4BB">
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/nav_bar_container_cns"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="45dp"
+        android:background="#314E4C"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/menu_icon_nav_imgbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="28dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="24dp"
+            android:layout_weight="1"
+            android:background="#00FFFFFF"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/menubtn" />
+
+        <ImageButton
+            android:id="@+id/pfp_holder_imgbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginBottom="16dp"
+            android:layout_weight="1"
+            android:background="#00FFFFFF"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/pfp_icon_holder" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="130dp"
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="parent">
+        >
+
+        <ImageView
+            android:id="@+id/logo_home_img"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/cosca_love_green_and_red_logo_1" />
+
+        <ImageButton
+            android:id="@+id/log_residency_home_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#B0C4BB"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            app:srcCompat="@drawable/logresidencybtn" />
+
+        <ImageButton
+            android:id="@+id/view_activities_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#B0C4BB"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            app:srcCompat="@drawable/viewactivitiesbtn" />
+
+        <ImageButton
+            android:id="@+id/view_other_members_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#B0C4BB"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            app:srcCompat="@drawable/viewothermembersbtn" />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
