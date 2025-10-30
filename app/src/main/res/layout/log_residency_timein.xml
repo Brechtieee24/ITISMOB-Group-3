@@ -7,45 +7,7 @@
     android:background="#B0C4BB">
 
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/nav_bar_container_cns"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="45dp"
-        android:background="#314E4C"
-        app:layout_constraintBottom_toTopOf="@+id/log_residency_container_lnr"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageButton
-            android:id="@+id/menu_icon_nav_imgbtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="28dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="24dp"
-            android:layout_weight="1"
-            android:background="#00FFFFFF"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/menubtn" />
-
-        <ImageButton
-            android:id="@+id/pfp_holder_imgbtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="32dp"
-            android:layout_marginBottom="16dp"
-            android:layout_weight="1"
-            android:background="#00FFFFFF"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/pfp_icon_holder" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <include layout="@layout/page_header" />
 
     <LinearLayout
         android:id="@+id/log_residency_container_lnr"
