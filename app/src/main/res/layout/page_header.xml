@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    tools:visibility="visible">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/nav_bar_container_cns"
@@ -18,12 +19,11 @@
 
         <ImageButton
             android:id="@+id/menu_icon_nav_imgbtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="40dp"
             android:layout_marginStart="28dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="24dp"
-            android:layout_weight="1"
+            android:layout_marginTop="18dp"
+            android:layout_marginBottom="18dp"
             android:background="#00FFFFFF"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -45,5 +45,90 @@
             app:srcCompat="@drawable/pfp_icon_holder" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/nav_bar_container_lnr"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@+id/nav_bar_container_cns"
+        tools:layout_editor_absoluteX="0dp"
+        tools:visibility="gone">
+
+        <Button
+            android:id="@+id/nav_home_btn"
+            android:layout_width="match_parent"
+            android:layout_height="37dp"
+            android:background="#6E787B"
+            android:backgroundTint="#225C6E"
+            android:backgroundTintMode="src_in"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:paddingLeft="5dp"
+            android:paddingTop="2dp"
+            android:paddingRight="5dp"
+            android:paddingBottom="2dp"
+            android:text="Home" />
+
+        <Button
+            android:id="@+id/nav_residency_btn"
+            android:layout_width="match_parent"
+            android:layout_height="37dp"
+            android:background="#6E787B"
+            android:backgroundTint="#225C6E"
+            android:backgroundTintMode="src_in"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:paddingLeft="5dp"
+            android:paddingTop="2dp"
+            android:paddingRight="5dp"
+            android:paddingBottom="2dp"
+            android:text="Residency" />
+
+        <Button
+            android:id="@+id/nav_acts_btn"
+            android:layout_width="match_parent"
+            android:layout_height="37dp"
+            android:background="#6E787B"
+            android:backgroundTint="#225C6E"
+            android:backgroundTintMode="src_in"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:paddingLeft="5dp"
+            android:paddingTop="2dp"
+            android:paddingRight="5dp"
+            android:paddingBottom="2dp"
+            android:text="Activities" />
+
+        <Button
+            android:id="@+id/nav_members_btn"
+            android:layout_width="match_parent"
+            android:layout_height="37dp"
+            android:background="#6E787B"
+            android:backgroundTint="#225C6E"
+            android:backgroundTintMode="src_in"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:paddingLeft="5dp"
+            android:paddingTop="2dp"
+            android:paddingRight="5dp"
+            android:paddingBottom="2dp"
+            android:text="Members" />
+
+        <Button
+            android:id="@+id/nav_about_btn"
+            android:layout_width="match_parent"
+            android:layout_height="37dp"
+            android:background="#6E787B"
+            android:backgroundTint="#225C6E"
+            android:backgroundTintMode="src_in"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:paddingLeft="5dp"
+            android:paddingTop="2dp"
+            android:paddingRight="5dp"
+            android:paddingBottom="2dp"
+            android:text="About" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

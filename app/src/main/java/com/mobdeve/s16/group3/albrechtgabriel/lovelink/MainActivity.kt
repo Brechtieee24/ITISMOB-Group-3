@@ -1,32 +1,21 @@
 package com.mobdeve.s16.group3.albrechtgabriel.lovelink
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import android.widget.Button
-import android.widget.ImageButton
+import com.mobdeve.s16.group3.albrechtgabriel.lovelink.databinding.LandingPageBinding
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var binding: LandingPageBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        showLoginPage()
-    }
+        binding = LandingPageBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-    private fun showLoginPage() {
-        setContentView(R.layout.landing_page)
-
-        val signIn = findViewById<ImageButton>(R.id.sign_in_btn_imgbtn)
-        signIn.setOnClickListener {
-            showHomePage()
-        }
-    }
-
-    private fun showHomePage() {
-        setContentView(R.layout.home_page)
-
-        val backButton = findViewById<ImageButton>(R.id.return_btn)
-        backButton.setOnClickListener {
-            showLoginPage()
+        binding.signInBtnImgbtn.setOnClickListener {
+            val intent = Intent(this, HomeActivity::class.java)
+            startActivity(intent)
         }
     }
 }

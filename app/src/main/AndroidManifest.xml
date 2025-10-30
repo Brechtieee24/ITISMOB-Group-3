@@ -12,6 +12,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LOVELink">
 
+        <activity android:name=".HomeActivity" />
+
         <activity android:name=".MainActivity"
             android:exported="true"
             tools:ignore="Instantiatable">
