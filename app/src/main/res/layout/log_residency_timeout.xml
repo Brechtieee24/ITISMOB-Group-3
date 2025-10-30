@@ -54,48 +54,92 @@
         android:layout_marginTop="130dp"
         android:orientation="vertical"
         app:layout_constraintTop_toTopOf="parent">
-        >
+
+        <TextView
+            android:id="@+id/log_residency_name_lbl_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-black"
+            android:gravity="center"
+            android:text="Juan Dela Cruz (MAE)"
+            android:textSize="24sp" />
 
         <ImageView
-            android:id="@+id/logo_home_img"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:srcCompat="@drawable/cosca_love_green_and_red_logo_1" />
+            android:id="@+id/log_residency_qr_holder_iv"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
+            app:srcCompat="@drawable/_2423173e191da22e376b95cf310506bc5d8b66f" />
 
         <ImageButton
-            android:id="@+id/log_residency_home_btn"
+            android:id="@+id/time_out_btn"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#B0C4BB"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            app:srcCompat="@drawable/logresidencybtn" />
-
-        <ImageButton
-            android:id="@+id/log_activity_home_btn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#14A866"
+            android:layout_height="match_parent"
             android:backgroundTint="#AFC3BA"
-            app:srcCompat="@drawable/logactivitybtn" />
+            app:srcCompat="@drawable/timeoutbtn" />
 
-        <ImageButton
-            android:id="@+id/view_activities_btn"
+        <TextView
+            android:id="@+id/present_time_tv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#B0C4BB"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            app:srcCompat="@drawable/viewactivitiesbtn" />
+            android:layout_marginBottom="10dp"
+            android:fontFamily="sans-serif-black"
+            android:gravity="center"
+            android:text="Today is October 25, 2025  09:00:01" />
+
+        <LinearLayout
+            android:id="@+id/residency_summary_container_lnr"
+            android:layout_width="250dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/prev_resi_lbl_header_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#465D5D"
+                android:fontFamily="sans-serif-black"
+                android:gravity="center"
+                android:text="Previous Residency"
+                android:textColor="#FFFFFF" />
+
+            <LinearLayout
+                android:id="@+id/resi_summary_tbl_container_lnr"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#6C9192"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="10dp">
+
+                <TextView
+                    android:id="@+id/time_in_lbl_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Time In: June 24, 2025 08:00:01"
+                    android:textColor="#FFFFFF" />
+
+            </LinearLayout>
+        </LinearLayout>
 
         <ImageButton
-            android:id="@+id/view_other_members_btn"
+            android:id="@+id/residency_history_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#B0C4BB"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            app:srcCompat="@drawable/viewothermembersbtn" />
+            android:backgroundTint="#AFC3BA"
+            app:srcCompat="@drawable/resihistorybtn" />
+
+        <ImageButton
+            android:id="@+id/activity_history_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#AFC3BA"
+            app:srcCompat="@drawable/acthistorybtn" />
+
     </LinearLayout>
 
     <ImageButton
@@ -104,10 +148,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="62dp"
         android:layout_marginEnd="63dp"
-        android:layout_marginBottom="30dp"
+        android:layout_marginBottom="20dp"
         android:backgroundTint="#AFC3BA"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/log_out_btn" />
+        app:srcCompat="@drawable/returnbtn" />
 </androidx.constraintlayout.widget.ConstraintLayout>
