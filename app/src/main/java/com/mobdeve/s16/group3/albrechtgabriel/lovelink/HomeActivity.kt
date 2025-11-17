@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.mobdeve.s16.group3.albrechtgabriel.lovelink.databinding.HomePageBinding
+import android.widget.ImageView
 
 class HomeActivity : AppCompatActivity() {
     private lateinit var binding: HomePageBinding
@@ -21,6 +22,12 @@ class HomeActivity : AppCompatActivity() {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
             finish()
+        }
+
+        // show the View Members Page
+        binding.viewOtherMembersBtn.setOnClickListener {
+            val intent = Intent(this, ViewMembersActivity::class.java)
+            startActivity(intent)
         }
 
         // show/hide nav bar options
