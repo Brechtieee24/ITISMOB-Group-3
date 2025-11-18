@@ -16,7 +16,7 @@
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="120dp"
+        android:layout_marginTop="110dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -24,14 +24,79 @@
 
     <LinearLayout
         android:id="@+id/linearLayout"
-        android:layout_width="415dp"
-        android:layout_height="465dp"
+        android:layout_width="414dp"
+        android:layout_height="487dp"
         android:layout_marginTop="50dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"></LinearLayout>
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="20px"
+            app:srcCompat="@drawable/committee_btn_cbsf" />
+
+        <ImageView
+            android:id="@+id/imageView5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="20px"
+            app:srcCompat="@drawable/committee_btn_creatives" />
+
+        <ImageView
+            android:id="@+id/imageView7"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="20px"
+            app:srcCompat="@drawable/committee_btn_fin" />
+
+        <ImageView
+            android:id="@+id/imageView8"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="20px"
+            app:srcCompat="@drawable/committee_btn_logi" />
+
+        <ImageView
+            android:id="@+id/imageView9"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="20px"
+            app:srcCompat="@drawable/committee_btn_mae" />
+
+        <ImageView
+            android:id="@+id/imageView10"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="20px"
+            app:srcCompat="@drawable/committee_btn_marketing" />
+
+        <ImageView
+            android:id="@+id/imageView11"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="20px"
+            app:srcCompat="@drawable/committee_btn_secp" />
+
+        <ImageView
+            android:id="@+id/imageView12"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="20px"
+            app:srcCompat="@drawable/committee_btn_sofo" />
+
+        <ImageView
+            android:id="@+id/imageView6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="20px"
+            app:srcCompat="@drawable/committee_btn_docu" />
+
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/imageView2"
