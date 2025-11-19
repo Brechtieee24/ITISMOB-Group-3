@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    android:layout_width="408dp"
     android:layout_height="match_parent">
 
     <LinearLayout
@@ -15,8 +15,9 @@
 
         <ImageView
             android:id="@+id/imageView4"
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
+            android:layout_width="3dp"
+            android:layout_height="55dp"
+            android:layout_gravity="center"
             android:layout_weight="1"
             app:srcCompat="@drawable/pfp_icon_holder" />
 
@@ -27,6 +28,7 @@
             android:layout_weight="1"
             android:fontFamily="@font/arvo"
             android:gravity="center"
+            android:paddingLeft="50px"
             android:text="Member 1"
             android:textAlignment="textStart"
             android:textColor="#ffff"
@@ -39,6 +41,7 @@
             android:layout_weight="1"
             android:fontFamily="@font/arvo"
             android:gravity="center"
+            android:paddingRight="50px"
             android:text="00:00:00"
             android:textAlignment="textEnd"
             android:textColor="#ffff"
