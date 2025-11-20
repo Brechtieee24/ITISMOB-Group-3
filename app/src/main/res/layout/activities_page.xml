@@ -30,7 +30,12 @@
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView15"></LinearLayout>
+        app:layout_constraintTop_toBottomOf="@+id/imageView15">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/imageView16"
@@ -51,4 +56,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView16"
         app:srcCompat="@drawable/returnbtn_view_members_page" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
