@@ -25,6 +25,25 @@
 
         <activity android:name=".ViewMembersActivity" />
 
+        <activity
+            android:name=".ResidencyHistoryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ActivityHistoryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LogResidencyTimeInActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LogResidencyTimeOutActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ViewOtherProfileActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>

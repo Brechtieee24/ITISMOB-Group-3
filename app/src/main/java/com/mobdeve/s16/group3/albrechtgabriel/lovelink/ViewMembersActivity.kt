@@ -1,5 +1,6 @@
 package com.mobdeve.s16.group3.albrechtgabriel.lovelink
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -15,13 +16,20 @@ class ViewMembersActivity : AppCompatActivity() {
 
         binding.navbar.navBarContainerLnr.visibility = View.GONE
 
-        // show/hide nav bar options
+        // Show/hide nav bar options
         binding.navbar.menuIconNavImgbtn.setOnClickListener {
             val menuSection = binding.navbar.navBarContainerLnr
             menuSection.visibility =
                 if (menuSection.visibility == View.VISIBLE) {
                     View.GONE
                 } else View.VISIBLE
+        }
+
+        // Temporary test button on view_members_page - remove when Members RecyclerView is implemented
+        binding.testViewProfileBtn.setOnClickListener {
+            val intent = Intent(this, ViewOtherProfileActivity::class.java)
+            intent.putExtra("MEMBER_NAME", "Jules Dela Cruz (MAE)")
+            startActivity(intent)
         }
     }
 }
