@@ -1,8 +1,11 @@
 package com.mobdeve.s16.group3.albrechtgabriel.lovelink
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mobdeve.s16.group3.albrechtgabriel.lovelink.databinding.ProfilePageBinding
@@ -13,6 +16,21 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var activityList: ArrayList<String>
     private lateinit var monthlyResidencyAdapter: MonthlyResidencyAdapter
     private lateinit var monthlyResidencyList: ArrayList<MonthlyResidency>
+
+    private var originalBioText: String = ""
+    private var selectedImageUri: Uri? = null
+
+    // Photo picker launcher
+    private val pickImageLauncher = registerForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            selectedImageUri = it
+            binding.profilePictureIv.setImageURI(it)
+            Toast.makeText(this, "Photo updated! Remember to save changes.", Toast.LENGTH_SHORT).show()
+            // TODO: Upload to Firebase Storage
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,13 +62,27 @@ class ProfileActivity : AppCompatActivity() {
                 } else View.VISIBLE
         }
 
-        // Update Bio button (placeholder for now)
-        binding.updateBioBtn.setOnClickListener {
-            // TODO: Implement update bio functionality
-            // Show/hide the edit options (Save Bio, Change Photo, Cancel)
+        // Profile picture click - open file picker
+        binding.profilePictureIv.setOnClickListener {
+            changeProfilePhoto()
         }
 
-        // Return button always goes back to Home
+        // Update Bio button - enter edit mode
+        binding.updateBioBtn.setOnClickListener {
+            enterEditMode()
+        }
+
+        // Save Bio button - save changes
+        binding.saveBioBtn.setOnClickListener {
+            saveBioChanges()
+        }
+
+        // Cancel Changes button - discard changes
+        binding.cancelChangesBtn.setOnClickListener {
+            cancelChanges()
+        }
+
+        // Return button - always goes back to Home
         binding.returnBtn.setOnClickListener {
             val intent = Intent(this, HomeActivity::class.java)
             startActivity(intent)
@@ -59,9 +91,13 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun loadProfileData() {
-        // SAMPLE DATA - replace with actual data from database later
+        // Sample data - replace with actual data from database later
         binding.profileNameTv.text = "Jules Dela Cruz (MAE)"
         binding.profileBioTv.text = "Hi! My name is Jules."
+        binding.profileBioEt.setText("Hi! My name is Jules.")
+
+        // Store original bio for cancel functionality
+        originalBioText = binding.profileBioTv.text.toString()
 
         // Calculate monthly residency from residency history
         monthlyResidencyList = calculateMonthlyResidency()
@@ -75,13 +111,8 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun calculateMonthlyResidency(): ArrayList<MonthlyResidency> {
-        // SAMPLE DATA FOR CALCULATION - in real app, fetch from ResidencyHistory database
-        // and group by month, then sum up total minutes
-
-        // Sample data shows each entry is 133 minutes, example:
-        // - October: 5 entries x 133 minutes = 665 minutes
-        // - September: 4 entries x 133 minutes = 532 minutes
-        // - August: 3 entries x 133 minutes = 399 minutes
+        // SAMPLE calculation - in real app, fetch from ResidencyHistory database
+        // group by month, then sum up total minutes
 
         return arrayListOf(
             MonthlyResidency("Oct", 490),  // 8 hours 10 minutes = 490 minutes
@@ -90,7 +121,120 @@ class ProfileActivity : AppCompatActivity() {
         )
     }
 
-    // TODO: Future function to calculate from actual database
+    private fun enterEditMode() {
+        // Store the original bio text before editing
+        originalBioText = binding.profileBioTv.text.toString()
+
+        // Copy current bio to EditText
+        binding.profileBioEt.setText(binding.profileBioTv.text.toString())
+
+        // Hide TextView, show EditText
+        binding.profileBioTv.visibility = View.GONE
+        binding.profileBioEt.visibility = View.VISIBLE
+
+        // Hide view mode buttons, show edit mode buttons
+        binding.viewModeContainer.visibility = View.GONE
+        binding.editModeContainer.visibility = View.VISIBLE
+
+        // Hide return button in edit mode
+        binding.returnBtn.visibility = View.GONE
+
+        // Focus on EditText and show keyboard
+        binding.profileBioEt.requestFocus()
+        binding.profileBioEt.setSelection(binding.profileBioEt.text.length) // Cursor at end
+    }
+
+    private fun saveBioChanges() {
+        // Get the edited bio text
+        val newBioText = binding.profileBioEt.text.toString().trim()
+
+        if (newBioText.isEmpty()) {
+            Toast.makeText(this, "Bio cannot be empty", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Update the TextView with new bio
+        binding.profileBioTv.text = newBioText
+
+        // TODO: Save to database
+        // updateBioInDatabase(newBioText)
+
+        // TODO: If photo was changed, upload it
+        // if (selectedImageUri != null) {
+        //     uploadPhotoToStorage(selectedImageUri!!)
+        // }
+
+        // Exit edit mode
+        exitEditMode()
+
+        Toast.makeText(this, "Profile saved successfully", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun cancelChanges() {
+        // Restore original bio text (discard changes)
+        binding.profileBioEt.setText(originalBioText)
+
+        // Restore original photo if it was changed
+        if (selectedImageUri != null) {
+            // Reload original photo from database
+            // For now, just reset to default
+            binding.profilePictureIv.setImageResource(R.drawable.pfp_icon_holder)
+            selectedImageUri = null
+        }
+
+        // Exit edit mode without saving
+        exitEditMode()
+
+        Toast.makeText(this, "Changes cancelled", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun exitEditMode() {
+        // Show TextView, hide EditText
+        binding.profileBioTv.visibility = View.VISIBLE
+        binding.profileBioEt.visibility = View.GONE
+
+        // Show view mode buttons, hide edit mode buttons
+        binding.viewModeContainer.visibility = View.VISIBLE
+        binding.editModeContainer.visibility = View.GONE
+
+        // Show return button again
+        binding.returnBtn.visibility = View.VISIBLE
+    }
+
+    private fun changeProfilePhoto() {
+        // Open file picker to select image
+        pickImageLauncher.launch("image/*")
+    }
+
+    // Future function for uploading photo to Firebase Storage
+    /*
+    private fun uploadPhotoToStorage(imageUri: Uri) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val storageRef = FirebaseStorage.getInstance().reference
+            .child("profile_photos/$userId.jpg")
+
+        storageRef.putFile(imageUri)
+            .addOnSuccessListener { taskSnapshot ->
+                storageRef.downloadUrl.addOnSuccessListener { downloadUri ->
+                    // Save download URL to database
+                    updatePhotoUrlInDatabase(downloadUri.toString())
+                }
+            }
+            .addOnFailureListener { exception ->
+                Toast.makeText(this, "Failed to upload photo: ${exception.message}",
+                    Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun updatePhotoUrlInDatabase(photoUrl: String) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        FirebaseDatabase.getInstance().reference
+            .child("members").child(userId).child("photo")
+            .setValue(photoUrl)
+    }
+    */
+
+    // Future function to calculate from actual database
     private fun calculateMonthlyResidencyFromDB(): ArrayList<MonthlyResidency> {
         // Pseudocode for when you implement database:
         // 1. Fetch all ResidencyItems for this user

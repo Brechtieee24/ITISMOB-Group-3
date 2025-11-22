@@ -28,13 +28,17 @@
             android:paddingTop="20dp"
             android:paddingBottom="20dp">
 
+            <!-- Profile Picture - Clickable to change photo -->
             <ImageView
                 android:id="@+id/profile_picture_iv"
                 android:layout_width="120dp"
                 android:layout_height="120dp"
                 android:layout_marginBottom="15dp"
+                android:clickable="true"
+                android:focusable="true"
                 app:srcCompat="@drawable/pfp_icon_holder" />
 
+            <!-- Profile Name -->
             <TextView
                 android:id="@+id/profile_name_tv"
                 android:layout_width="wrap_content"
@@ -44,6 +48,7 @@
                 android:textColor="#465D5D"
                 android:textSize="22sp" />
 
+            <!-- Bio TextView (View Mode) -->
             <TextView
                 android:id="@+id/profile_bio_tv"
                 android:layout_width="wrap_content"
@@ -52,16 +57,80 @@
                 android:layout_marginBottom="15dp"
                 android:text="Hi! My name is Jules."
                 android:textColor="#465D5D"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:visibility="visible" />
 
-            <ImageButton
-                android:id="@+id/update_bio_btn"
+            <!-- Bio EditText (Edit Mode) - Hidden by default -->
+            <EditText
+                android:id="@+id/profile_bio_et"
+                android:layout_width="280dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="15dp"
+                android:background="#D3E4E0"
+                android:gravity="center"
+                android:hint="Enter your bio..."
+                android:inputType="textMultiLine"
+                android:maxLines="3"
+                android:padding="10dp"
+                android:text="Hi! My name is Jules."
+                android:textColor="#465D5D"
+                android:textSize="14sp"
+                android:visibility="gone" />
+
+            <!-- View Mode Container - Update Bio Button -->
+            <LinearLayout
+                android:id="@+id/view_mode_container"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:backgroundTint="#AFC3BA"
-                app:srcCompat="@drawable/menubtn" />
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="15dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="visible">
 
+                <ImageButton
+                    android:id="@+id/update_bio_btn"
+                    android:layout_width="250dp"
+                    android:layout_height="50dp"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="Update Bio"
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@drawable/update_bio_btn" />
+            </LinearLayout>
+
+            <!-- Edit Mode Container - Save & Cancel Buttons -->
+            <LinearLayout
+                android:id="@+id/edit_mode_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="15dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <ImageButton
+                    android:id="@+id/save_bio_btn"
+                    android:layout_width="250dp"
+                    android:layout_height="50dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="Save Bio"
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@drawable/save_bio_btn" />
+
+                <ImageButton
+                    android:id="@+id/cancel_changes_btn"
+                    android:layout_width="250dp"
+                    android:layout_height="50dp"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="Cancel Changes"
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@drawable/cancel_changes_btn" />
+            </LinearLayout>
+
+            <!-- Residency Hours Section -->
             <LinearLayout
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
@@ -87,6 +156,7 @@
                     android:minHeight="100dp" />
             </LinearLayout>
 
+            <!-- List of Activities Section -->
             <LinearLayout
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
@@ -115,12 +185,14 @@
         </LinearLayout>
     </ScrollView>
 
+    <!-- Return Button - Hidden in Edit Mode -->
     <ImageButton
         android:id="@+id/return_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="28dp"
         android:backgroundTint="#AFC3BA"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
