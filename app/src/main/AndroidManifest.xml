@@ -3,8 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Permission to read images from device storage for Profile Pic Change -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
+    <!-- GEOLOCATION PERMISSIONS -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
 
     <application
         android:allowBackup="true"
@@ -15,6 +21,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.LOVELink">
+
+        <receiver android:name=".GeofenceBroadcastReceiver" android:exported="false"/>
 
         <activity android:name=".HomeActivity" />
 

@@ -54,6 +54,9 @@ dependencies {
     //gson import
     implementation("com.google.code.gson:gson:2.10.1")
 
+    //geolocation
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+
     // Firebase Realtime Database
     implementation("com.google.firebase:firebase-database-ktx:20.3.0")
     implementation("com.firebaseui:firebase-ui-database:8.0.2")
