@@ -51,6 +51,9 @@ dependencies {
     // java time
     implementation("com.jakewharton.threetenabp:threetenabp:1.4.6")
 
+    //gson import
+    implementation("com.google.code.gson:gson:2.10.1")
+
     // Firebase Realtime Database
     implementation("com.google.firebase:firebase-database-ktx:20.3.0")
     implementation("com.firebaseui:firebase-ui-database:8.0.2")

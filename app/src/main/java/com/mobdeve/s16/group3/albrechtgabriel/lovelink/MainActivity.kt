@@ -9,6 +9,9 @@ import com.mobdeve.s16.group3.albrechtgabriel.lovelink.databinding.LandingPageBi
 import com.jakewharton.threetenabp.AndroidThreeTen
 
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: LandingPageBinding
@@ -19,7 +22,9 @@ class MainActivity : AppCompatActivity() {
         binding = LandingPageBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
+        lifecycleScope.launch {
+            UserSeeder.migrateUsersToEmailId()
+        }
 
         binding.signInBtnImgbtn.setOnClickListener {
             lifecycleScope.launch {
@@ -33,6 +38,8 @@ class MainActivity : AppCompatActivity() {
                     startActivity(intent)
                 } else {
                     // User doesn't exist → maybe show a login/register screen
+                    val intent = Intent(this@MainActivity, HomeActivity::class.java)
+                    startActivity(intent)
                 }
             }
         }

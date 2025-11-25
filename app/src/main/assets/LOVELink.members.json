@@ -1,0 +1,221 @@
+[{
+  "_id": {
+    "$oid": "6867bf48e8c956da7989a9c4"
+  },
+  "firstName": "Cedric ",
+  "lastName": "Ong",
+  "email": "cedric_ong@dlsu.edu.ph",
+  "committee": "SoFo",
+  "isOfficer": false,
+  "aboutInfo": "Hello",
+  "lastLogin": {
+    "$date": "2025-08-02T10:49:13.722Z"
+  },
+  "formattedResidencyTime": "00:18:42",
+  "totalResidencyTime": 1122
+},
+{
+  "_id": {
+    "$oid": "6867bf48e8c956da7989a9c5"
+  },
+  "firstName": "Hana",
+  "lastName": "Jang",
+  "email": "hana_jang@dlsu.edu.ph",
+  "committee": "MARKETING",
+  "isOfficer": false,
+  "aboutInfo": "test",
+  "lastLogin": {
+    "$date": "2025-08-01T18:32:26.203Z"
+  },
+  "totalResidencyTime": 5477,
+  "formattedResidencyTime": "01:31:17",
+  "cloudinaryId": "lovelink_profiles/itdmmja6snlcm98smbca",
+  "photo": "https://res.cloudinary.com/dabthjfxj/image/upload/v1753506443/lovelink_profiles/itdmmja6snlcm98smbca.png"
+},
+{
+  "_id": {
+    "$oid": "6867bf48e8c956da7989a9c3"
+  },
+  "firstName": "Josh ",
+  "lastName": "Ng",
+  "email": "josh_denzel_ng@dlsu.edu.ph",
+  "committee": "CBSF",
+  "isOfficer": true,
+  "aboutInfo": "Hello New Bio!!!",
+  "lastLogin": {
+    "$date": "2025-08-02T13:25:25.919Z"
+  },
+  "totalResidencyTime": 11427,
+  "formattedResidencyTime": "03:10:27",
+  "cloudinaryId": "lovelink_profiles/pinfxuxgudwk54c2wch7",
+  "photo": "https://res.cloudinary.com/dabthjfxj/image/upload/v1754141112/lovelink_profiles/pinfxuxgudwk54c2wch7.jpg"
+},
+{
+  "_id": {
+    "$oid": "6867bf48e8c956da7989a9c6"
+  },
+  "firstName": "Maverick",
+  "lastName": "Olivares",
+  "email": "maverick_olivares@dlsu.edu.ph",
+  "committee": "SECP",
+  "isOfficer": true,
+  "aboutInfo": "Test 123",
+  "lastLogin": {
+    "$date": "2025-08-02T07:00:15.885Z"
+  },
+  "totalResidencyTime": 15300,
+  "formattedResidencyTime": "04:15:00"
+},
+{
+  "_id": {
+    "$oid": "6867bf48e8c956da7989a9c2"
+  },
+  "firstName": "Albrecht",
+  "lastName": "Abad",
+  "email": "albrecht_abad@dlsu.edu.ph",
+  "committee": "MAE",
+  "isOfficer": true,
+  "lastLogin": {
+    "$date": "2025-10-16T07:52:39.802Z"
+  },
+  "aboutInfo": "Animosearchhhh",
+  "totalResidencyTime": 924509,
+  "formattedResidencyTime": "256:48:29",
+  "photo": "https://res.cloudinary.com/dabthjfxj/image/upload/v1757326204/lovelink_profiles/xf8o71frbkki18bjqjns.png",
+  "cloudinaryId": "lovelink_profiles/xf8o71frbkki18bjqjns"
+},
+{
+  "_id": {
+    "$oid": "6879b4f5796b72303d5d16bc"
+  },
+  "firstName": "Sofia Joie",
+  "lastName": "Barbon",
+  "email": "sofia_barbon@dlsu.edu.ph",
+  "committee": "SECP",
+  "isOfficer": false,
+  "lastLogin": {
+    "$date": "2025-07-18T07:44:01.690Z"
+  },
+  "aboutInfo": "Hi!",
+  "totalResidencyTime": 78,
+  "formattedResidencyTime": "00:01:18"
+},
+{
+  "_id": {
+    "$oid": "687c8404e2d561adfc6cced4"
+  },
+  "firstName": "Sofia Carmella",
+  "lastName": "Salmon",
+  "email": "sofia_salmon@dlsu.edu.ph",
+  "committee": "FIN",
+  "isOfficer": true,
+  "aboutInfo": "woah woah woah woaaaaaaaaaaaaaaaaaaaaaaaaaaaaahhhhhhhh",
+  "lastLogin": {
+    "$date": "2025-08-06T10:24:54.208Z"
+  },
+  "totalResidencyTime": 85,
+  "formattedResidencyTime": "00:01:25",
+  "cloudinaryId": "lovelink_profiles/wwd9fhvakbbxkybqmkid",
+  "photo": "https://res.cloudinary.com/dabthjfxj/image/upload/v1754475858/lovelink_profiles/wwd9fhvakbbxkybqmkid.jpg"
+},
+{
+  "_id": {
+    "$oid": "6883802bbf188b33837750e2"
+  },
+  "firstName": "Joel Andrew",
+  "lastName": "Cruz",
+  "email": "joel.cruz@dlsu.edu.ph",
+  "committee": "MAE",
+  "isOfficer": false,
+  "lastLogin": {
+    "$date": "1970-01-01T00:00:00.000Z"
+  },
+  "aboutInfo": "",
+  "totalResidencyTime": 0,
+  "formattedResidencyTime": "00:00:00",
+  "photo": "",
+  "cloudinaryId": ""
+},
+{
+  "_id": {
+    "$oid": "6888edae82a3ee45e1815132"
+  },
+  "firstName": "Mariechi",
+  "lastName": "Alferez",
+  "email": "mariechi_alferez@dlsu.edu.ph",
+  "committee": "DOCU",
+  "isOfficer": false,
+  "aboutInfo": "Meowa",
+  "formattedResidencyTime": "00:01:11",
+  "lastLogin": {
+    "$date": "2025-07-29T16:12:42.373Z"
+  },
+  "totalResidencyTime": 71,
+  "cloudinaryId": "lovelink_profiles/pl1i4c8ae973quvvhszq",
+  "photo": "https://res.cloudinary.com/dabthjfxj/image/upload/v1753804884/lovelink_profiles/pl1i4c8ae973quvvhszq.png"
+},
+{
+  "_id": {
+    "$oid": "6888edae82a3ee45e1815135"
+  },
+  "firstName": "Jaira Mae",
+  "lastName": "Chan",
+  "email": "jaira_chan@dlsu.edu.ph",
+  "committee": "DOCU",
+  "isOfficer": false,
+  "aboutInfo": "Meowers",
+  "totalResidencyTime": 0,
+  "formattedResidencyTime": "00:00:00"
+},
+{
+  "_id": {
+    "$oid": "6888edae82a3ee45e1815136"
+  },
+  "firstName": "Jefferson Nasrali",
+  "lastName": "Conding",
+  "email": "jefferson_conding@dlsu.edu.ph",
+  "committee": "FIN",
+  "isOfficer": false,
+  "aboutInfo": "Run",
+  "totalResidencyTime": 0,
+  "formattedResidencyTime": "00:00:00"
+},
+{
+  "_id": {
+    "$oid": "6888edae82a3ee45e1815137"
+  },
+  "firstName": "Fennina Kassandra",
+  "lastName": "Cordero",
+  "email": "fennina_cordero@dlsu.edu.ph",
+  "committee": "MARKETING",
+  "isOfficer": true,
+  "aboutInfo": "Hi!",
+  "totalResidencyTime": 0,
+  "formattedResidencyTime": "00:00:00"
+},
+{
+  "_id": {
+    "$oid": "6888edae82a3ee45e1815134"
+  },
+  "firstName": "Jenevieve ",
+  "lastName": "Evangelista",
+  "email": "jenevieve_evangelista@dlsu.edu.ph",
+  "committee": "MAE",
+  "isOfficer": true,
+  "aboutInfo": "Meow Meow Meow",
+  "totalResidencyTime": 0,
+  "formattedResidencyTime": "00:00:00"
+},
+{
+  "_id": {
+    "$oid": "6888edae82a3ee45e1815133"
+  },
+  "firstName": "Joyce Gwyneth ",
+  "lastName": "Braza",
+  "email": "joyce_braza@dlsu.edu.ph",
+  "committee": "LOGI",
+  "isOfficer": true,
+  "aboutInfo": "Meow Meow",
+  "totalResidencyTime": 0,
+  "formattedResidencyTime": "00:00:00"
+}]

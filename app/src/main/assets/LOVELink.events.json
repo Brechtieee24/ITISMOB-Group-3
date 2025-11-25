@@ -1,0 +1,77 @@
+[{
+  "_id": {
+    "$oid": "6867c141e8c956da7989a9c8"
+  },
+  "eventName": "FTK 2026",
+  "date": "February 15, 2026"
+},
+{
+  "_id": {
+    "$oid": "6867c141e8c956da7989a9c9"
+  },
+  "eventName": "SLSP Part 2",
+  "date": "July 20, 2025"
+},
+{
+  "_id": {
+    "$oid": "6867c141e8c956da7989a9ca"
+  },
+  "eventName": "AnimoFest 2025",
+  "date": "July 1, 2025"
+},
+{
+  "_id": {
+    "$oid": "68788a22bb9f53ff14910441"
+  },
+  "eventName": "COSCA Event 1",
+  "date": "June 12, 2026",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68788a962df55e1451e7b2ce"
+  },
+  "eventName": "COSCA Event 2",
+  "date": "June 13, 2026",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68788ab2544cd7560ee5720c"
+  },
+  "eventName": "COSCA Event 3",
+  "date": "June 14, 2026",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68788ebc4110402f7f9c4293"
+  },
+  "eventName": "COSCA Event 4",
+  "date": "June 15, 2026",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68788f1d85ffa41e286d370b"
+  },
+  "eventName": "COSCA Event 5",
+  "date": "June 16, 2026",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "688af77de059de7ad23be1ef"
+  },
+  "eventName": "COSCA Event 10000000000",
+  "date": "July 2, 2025",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "689093a819c6b1f35c2f5d18"
+  },
+  "eventName": "C0SCA 09",
+  "date": "February 19, 2026",
+  "__v": 0
+}]
