@@ -1,6 +1,6 @@
 plugins {
     id("com.android.application")
-    id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.android") version "1.9.10" // specify the Kotlin version
     id("com.google.gms.google-services") // Firebase plugin
 }
 
@@ -14,8 +14,6 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildFeatures {
@@ -43,24 +41,32 @@ android {
 }
 
 dependencies {
-    // AndroidX and Material
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.recyclerview)
 
-    // Testing
+    // java time
+    implementation("com.jakewharton.threetenabp:threetenabp:1.4.6")
+
+    // Firebase Realtime Database
+    implementation("com.google.firebase:firebase-database-ktx:20.3.0")
+    implementation("com.firebaseui:firebase-ui-database:8.0.2")
+    // Cloud Firestore
+    implementation("com.google.firebase:firebase-firestore-ktx:24.9.1")
+    implementation("com.firebaseui:firebase-ui-firestore:8.0.2")
+    // Firebase Auth
+    implementation("com.google.firebase:firebase-auth-ktx:22.2.0")
+    implementation("com.firebaseui:firebase-ui-auth:8.0.2")
+    // Cloud Storage
+    implementation("com.google.firebase:firebase-storage-ktx:20.3.0")
+    implementation("com.firebaseui:firebase-ui-storage:8.0.2")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
-    // Firebase BoM
-    implementation(platform("com.google.firebase:firebase-bom:34.6.0"))
-
-    // Firebase Firestore (KTX for Kotlin)
-    implementation("com.google.firebase:firebase-firestore-ktx")
-
-    // Firebase Analytics
-    implementation("com.google.firebase:firebase-analytics-ktx")
 }
+
+

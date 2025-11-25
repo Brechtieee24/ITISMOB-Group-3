@@ -12,7 +12,12 @@
           "package_name": "com.mobdeve.s16.group3.albrechtgabriel.lovelink"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "626253811484-0gaf390bum3spe8p1ail9bsmtnmpjvek.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyATkluucCzU4UZE9Jn6nXwT5dfEkMBI-z0"
@@ -20,7 +25,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "626253811484-0gaf390bum3spe8p1ail9bsmtnmpjvek.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

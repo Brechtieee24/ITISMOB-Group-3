@@ -5,7 +5,7 @@ import java.util.Date
 
 data class User(
     @DocumentId
-    val id: String = "",           // Firestore document ID (_id)
+    var id: String = "",           // Firestore document ID (_id)
     val firstName: String = "",
     val lastName: String = "",
     val email: String = "",
