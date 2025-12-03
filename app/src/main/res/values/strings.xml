@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">LOVELink</string>
+    <string name="profile_name_template">%1$s %2$s (%3$s)</string>
+
 </resources>
