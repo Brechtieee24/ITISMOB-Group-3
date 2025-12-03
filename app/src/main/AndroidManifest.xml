@@ -62,6 +62,9 @@
         <activity
             android:name=".ViewActivitiesActivity"
             android:exported="false"/>
+        <activity
+            android:name=".ActivitiesPageActivity"
+            android:exported="false"/>
 
     </application>
 

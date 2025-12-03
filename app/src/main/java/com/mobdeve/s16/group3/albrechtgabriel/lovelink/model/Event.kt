@@ -6,5 +6,6 @@ data class Event(
     @DocumentId
     val id: String = "",       // Firestore document ID (_id)
     var eventName: String = "",
-    var date: String = ""    // store as Date for Firestore compatibility
+    var date: String = "",    // store as Date for Firestore compatibility
+    var description: String = ""
 )
