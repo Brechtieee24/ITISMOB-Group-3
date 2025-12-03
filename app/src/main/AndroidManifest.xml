@@ -1,9 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Permission to read images from device storage for Profile Pic Change -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
+    <!-- GEOLOCATION PERMISSIONS -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
@@ -23,6 +26,8 @@
             android:name=".geofencing.GeofenceBroadcastReceiver"
             android:exported="false" />
 
+
+
         <activity android:name=".HomeActivity" />
 
         <activity android:name=".MainActivity"
@@ -34,15 +39,36 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ViewMembersActivity" android:exported="false"/>
-        <activity android:name=".ResidencyHistoryActivity" android:exported="false" />
-        <activity android:name=".ActivityHistoryActivity" android:exported="false" />
-        <activity android:name=".LogResidencyTimeInActivity" android:exported="false" />
-        <activity android:name=".LogResidencyTimeOutActivity" android:exported="false" />
-        <activity android:name=".ProfileActivity" android:exported="false" />
-        <activity android:name=".ViewOtherProfileActivity" android:exported="false" />
-        <activity android:name=".MembersPageActivity" android:exported="false"/>
-        <activity android:name=".ViewActivitiesActivity" android:exported="false"/>
+        <activity
+            android:name=".ViewMembersActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".ResidencyHistoryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ActivityHistoryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LogResidencyTimeInActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LogResidencyTimeOutActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ViewOtherProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MembersPageActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".ViewActivitiesActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".ActivitiesPageActivity"
+            android:exported="false"/>
 
     </application>
 

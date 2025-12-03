@@ -11,9 +11,9 @@ object EventController {
     private fun eventsCollection() = FirebaseFirestore.getInstance().collection(EventConstants.EVENTS_COLLECTION)
 
     // Add a new event
-    suspend fun addEvent(eventName: String, date: String): Boolean {
+    suspend fun addEvent(eventName: String, date: String, description: String = ""): Boolean {
         return try {
-            val event = Event(eventName = eventName, date = date)
+            val event = Event(eventName = eventName, date = date, description = description)
             eventsCollection()
                 .add(event)
                 .await()  // suspend until complete
