@@ -38,8 +38,8 @@ class HomeActivity : AppCompatActivity() {
         // TODO for Josh: Navigate to View Activities page
         binding.viewActivitiesBtn.setOnClickListener {
             // TODO: Add ViewActivitiesActivity when implemented
-            // val intent = Intent(this, ViewActivitiesActivity::class.java)
-            // startActivity(intent)
+             val intent = Intent(this, ViewActivitiesActivity::class.java)
+             startActivity(intent)
         }
 
         // Show the View Members Page

@@ -7,7 +7,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mobdeve.s16.group3.albrechtgabriel.lovelink.databinding.MembersPageBinding
 import com.mobdeve.s16.group3.albrechtgabriel.lovelink.controller.UserController
-import com.mobdeve.s16.group3.albrechtgabriel.lovelink.MemberAdapter
+import com.mobdeve.s16.group3.albrechtgabriel.lovelink.adapter.MemberAdapter
 import kotlinx.coroutines.launch
 
 class MembersPageActivity : AppCompatActivity() {

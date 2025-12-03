@@ -35,8 +35,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ViewMembersActivity" />
-
+        <activity
+            android:name=".ViewMembersActivity"
+            android:exported="false"/>
         <activity
             android:name=".ResidencyHistoryActivity"
             android:exported="false" />
@@ -55,8 +56,11 @@
         <activity
             android:name=".ViewOtherProfileActivity"
             android:exported="false" />
-
-        <activity android:name=".MembersPageActivity"
+        <activity
+            android:name=".MembersPageActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".ViewActivitiesActivity"
             android:exported="false"/>
 
     </application>

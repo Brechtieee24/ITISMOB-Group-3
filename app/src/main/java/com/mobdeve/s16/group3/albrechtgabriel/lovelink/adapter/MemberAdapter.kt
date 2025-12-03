@@ -1,4 +1,4 @@
-package com.mobdeve.s16.group3.albrechtgabriel.lovelink
+package com.mobdeve.s16.group3.albrechtgabriel.lovelink.adapter
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.mobdeve.s16.group3.albrechtgabriel.lovelink.R
 import com.mobdeve.s16.group3.albrechtgabriel.lovelink.model.User
 
 class MemberAdapter(private var memberList: MutableList<User>) : RecyclerView.Adapter<MemberAdapter.MemberViewHolder>(){
@@ -22,7 +23,7 @@ class MemberAdapter(private var memberList: MutableList<User>) : RecyclerView.Ad
         return MemberViewHolder(inflatedView)
     }
 
-    override fun onBindViewHolder(holder: MemberAdapter.MemberViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: MemberViewHolder, position: Int) {
         // Get the specific User object from the list
         val user: User = memberList[position]
         holder.memberName.text = "${user.firstName} ${user.lastName}"
