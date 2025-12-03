@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.auth.FirebaseAuth
 import com.mobdeve.s16.group3.albrechtgabriel.lovelink.databinding.HomePageBinding
 
 class HomeActivity : AppCompatActivity() {
@@ -50,6 +51,10 @@ class HomeActivity : AppCompatActivity() {
 
         // Signs out the user
         binding.returnBtn.setOnClickListener {
+            // Sign out the current user
+            FirebaseAuth.getInstance().signOut()
+
+            // Navigate back to MainActivity
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
             finish()

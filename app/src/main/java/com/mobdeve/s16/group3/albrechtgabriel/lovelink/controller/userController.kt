@@ -11,15 +11,20 @@ object UserController {
     private val db get() = FirebaseFirestore.getInstance()
     private val usersCollection get() = db.collection(UserConstants.USERS_COLLECTION)
 
-    // ✅ Get user by email (now docId) and update last login
+    // Get user by email (now using query instead of doc ID)
     suspend fun getUserByEmail(email: String): User? {
         return try {
-            val docRef = usersCollection.document(email)
-            val doc = docRef.get().await()
+            val snapshot = usersCollection
+                .whereEqualTo(UserConstants.EMAIL_FIELD, email)
+                .get()
+                .await()
 
-            if (!doc.exists()) return null
+            if (snapshot.isEmpty) return null
 
-            docRef.update(UserConstants.LAST_LOGIN_FIELD, Date()).await()
+            val doc = snapshot.documents[0]
+
+            // Update last login
+            doc.reference.update(UserConstants.LAST_LOGIN_FIELD, Date()).await()
 
             doc.toObject(User::class.java)
         } catch (e: Exception) {
@@ -28,10 +33,10 @@ object UserController {
         }
     }
 
-    // ✅ Get user by ID (same as email now)
-    suspend fun getUserById(email: String): User? {
+    // Get user by doc ID
+    suspend fun getUserById(docId: String): User? {
         return try {
-            usersCollection.document(email).get().await()
+            usersCollection.document(docId).get().await()
                 .toObject(User::class.java)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -39,15 +44,18 @@ object UserController {
         }
     }
 
-    // ✅ Update about info
+    // Update about info
     suspend fun updateAboutInfo(email: String, aboutInfo: String): User? {
         return try {
-            val docRef = usersCollection.document(email)
-            val doc = docRef.get().await()
+            val snapshot = usersCollection
+                .whereEqualTo(UserConstants.EMAIL_FIELD, email)
+                .get()
+                .await()
 
-            if (!doc.exists()) return null
+            if (snapshot.isEmpty) return null
 
-            docRef.update(UserConstants.ABOUT_INFO_FIELD, aboutInfo).await()
+            val doc = snapshot.documents[0]
+            doc.reference.update(UserConstants.ABOUT_INFO_FIELD, aboutInfo).await()
 
             doc.toObject(User::class.java)
         } catch (e: Exception) {
@@ -56,12 +64,27 @@ object UserController {
         }
     }
 
-    // ✅ Get about info for a user
-    suspend fun userAboutInfo(email: String): User? {
-        return getUserById(email)
+    // Update profile picture
+    suspend fun updateUserProfilePic(email: String, imageUrl: String): User? {
+        return try {
+            val snapshot = usersCollection
+                .whereEqualTo(UserConstants.EMAIL_FIELD, email)
+                .get()
+                .await()
+
+            if (snapshot.isEmpty) return null
+
+            val doc = snapshot.documents[0]
+            doc.reference.update("photo", imageUrl).await()
+
+            doc.toObject(User::class.java)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
     }
 
-    // ✅ Filter members by committee
+    // Filter members by committee
     suspend fun filterByCommittee(committeeName: String): List<User> {
         return try {
             usersCollection
@@ -70,14 +93,26 @@ object UserController {
                 .await()
                 .documents
                 .mapNotNull { it.toObject(User::class.java) }
-                .distinctBy { it.email } // This removes duplicates based on email
+                .distinctBy { it.email }
         } catch (e: Exception) {
             e.printStackTrace()
             emptyList()
         }
     }
 
-    // ✅ Update formatted residency for all members of a committee
+    // Filter members by committee and minimum hours
+    suspend fun filterByCommitteeAndHour(committeeName: String, hours: Int): List<User> {
+        val minSeconds = hours * 3600
+        return try {
+            filterByCommittee(committeeName)
+                .filter { it.totalResidencyTime >= minSeconds }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
+    }
+
+    // Update formatted residency for all members of a committee
     suspend fun updateFormattedResidency(committee: String) {
         try {
             val members = filterByCommittee(committee)
@@ -91,43 +126,22 @@ object UserController {
                     totalSeconds % 60
                 )
 
-                usersCollection
-                    .document(member.email)  // use email instead of id
-                    .update(UserConstants.FORMATTED_RESIDENCY_TIME_FIELD, formatted)
+                // Query the document by email
+                val snapshot = usersCollection
+                    .whereEqualTo(UserConstants.EMAIL_FIELD, member.email)
+                    .get()
                     .await()
+
+                // Check if the query returned any documents
+                if (snapshot.documents.isNotEmpty()) {
+                    val docRef = snapshot.documents[0].reference
+                    docRef.update(UserConstants.FORMATTED_RESIDENCY_TIME_FIELD, formatted)
+                        .await()
+                }
             }
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
-    // ✅ Filter members by committee and minimum hours
-    suspend fun filterByCommitteeAndHour(committeeName: String, hours: Int): List<User> {
-        val minSeconds = hours * 3600
-
-        return try {
-            filterByCommittee(committeeName)
-                .filter { it.totalResidencyTime >= minSeconds }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            emptyList()
-        }
-    }
-
-    // ✅ Update profile picture
-    suspend fun updateUserProfilePic(email: String, imageUrl: String): User? {
-        return try {
-            val docRef = usersCollection.document(email)
-            val doc = docRef.get().await()
-
-            if (!doc.exists()) return null
-
-            docRef.update("photo", imageUrl).await()
-
-            doc.toObject(User::class.java)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
-    }
 }

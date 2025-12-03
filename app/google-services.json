@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "626253811484-vsv4in4capplsj7fnrsc30u6jm3i52uc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mobdeve.s16.group3.albrechtgabriel.lovelink",
+            "certificate_hash": "7af8d765f8b282443a084d4c1b55e76803f4debc"
+          }
+        },
+        {
           "client_id": "626253811484-0gaf390bum3spe8p1ail9bsmtnmpjvek.apps.googleusercontent.com",
           "client_type": 3
         }
