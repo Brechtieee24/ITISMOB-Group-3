@@ -40,14 +40,14 @@ class ViewMembersActivity : AppCompatActivity() {
     private fun setupCommitteeClickListeners() {
         val committeeMap = mapOf(
             binding.CBSF.id to "CBSF",
-            binding.CREATIVES.id to "Creatives",
-            binding.DOCU.id to "Docu",
+            binding.CREATIVES.id to "CREATIVES",
+            binding.DOCU.id to "DOCU",
             binding.FIN.id to "FIN",
             binding.LOGI.id to "LOGI",
             binding.MAE.id to "MAE",
-            binding.MARKETING.id to "Marketing",
+            binding.MARKETING.id to "MARKETING",
             binding.SECP.id to "SECP",
-            binding.SoFo.id to "SOFO"
+            binding.SoFo.id to "SoFo"
         )
 
         // Create a single, reusable click listener

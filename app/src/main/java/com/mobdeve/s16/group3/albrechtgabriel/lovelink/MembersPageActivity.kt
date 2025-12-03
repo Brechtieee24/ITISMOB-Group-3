@@ -3,7 +3,12 @@ package com.mobdeve.s16.group3.albrechtgabriel.lovelink
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.mobdeve.s16.group3.albrechtgabriel.lovelink.databinding.MembersPageBinding
+import com.mobdeve.s16.group3.albrechtgabriel.lovelink.controller.UserController
+import com.mobdeve.s16.group3.albrechtgabriel.lovelink.MemberAdapter
+import kotlinx.coroutines.launch
 
 class MembersPageActivity : AppCompatActivity() {
 
@@ -32,6 +37,15 @@ class MembersPageActivity : AppCompatActivity() {
         val committeeName = intent.getStringExtra("COMMITTEE_NAME")
         binding.committeeName.text = committeeName ?: "Members"
 
-        // --- TODO: Add RecyclerView and Firebase logic here in the next step ---
+        val memberAdapter = MemberAdapter(emptyList())
+        binding.membersRecyclerView.adapter = memberAdapter
+        binding.membersRecyclerView.layoutManager = LinearLayoutManager(this)
+
+        if (committeeName != null) {
+            lifecycleScope.launch {
+                val userList = UserController.filterByCommittee(committeeName)
+                memberAdapter.updateUsers(userList)
+            }
+        }
     }
 }

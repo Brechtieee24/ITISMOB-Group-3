@@ -14,7 +14,7 @@
         tools:layout_editor_absoluteY="-2dp">
 
         <ImageView
-            android:id="@+id/imageView4"
+            android:id="@+id/pfp"
             android:layout_width="3dp"
             android:layout_height="55dp"
             android:layout_gravity="center"
@@ -22,7 +22,7 @@
             app:srcCompat="@drawable/pfp_icon_holder" />
 
         <TextView
-            android:id="@+id/textView5"
+            android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -35,7 +35,7 @@
             android:textColorLink="#ffff" />
 
         <TextView
-            android:id="@+id/textView6"
+            android:id="@+id/totalHours"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
