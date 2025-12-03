@@ -37,7 +37,7 @@ class MembersPageActivity : AppCompatActivity() {
         val committeeName = intent.getStringExtra("COMMITTEE_NAME")
         binding.committeeName.text = committeeName ?: "Members"
 
-        val memberAdapter = MemberAdapter(emptyList())
+        val memberAdapter = MemberAdapter(mutableListOf())
         binding.membersRecyclerView.adapter = memberAdapter
         binding.membersRecyclerView.layoutManager = LinearLayoutManager(this)
 

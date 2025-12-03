@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.mobdeve.s16.group3.albrechtgabriel.lovelink.model.User
 
-class MemberAdapter(private var memberList: List<User>) : RecyclerView.Adapter<MemberAdapter.MemberViewHolder>(){
+class MemberAdapter(private var memberList: MutableList<User>) : RecyclerView.Adapter<MemberAdapter.MemberViewHolder>(){
     class MemberViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val pfp: ImageView = itemView.findViewById(R.id.pfp)
         val memberName: TextView = itemView.findViewById(R.id.name)
@@ -35,7 +35,8 @@ class MemberAdapter(private var memberList: List<User>) : RecyclerView.Adapter<M
     }
 
     fun updateUsers(newUsers: List<User>) {
-        memberList = newUsers
+        memberList.clear()
+        memberList.addAll(newUsers)
         notifyDataSetChanged() //To be fixed
     }
 }

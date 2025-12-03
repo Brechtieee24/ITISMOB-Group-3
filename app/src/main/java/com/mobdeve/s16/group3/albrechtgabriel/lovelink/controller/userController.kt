@@ -70,6 +70,7 @@ object UserController {
                 .await()
                 .documents
                 .mapNotNull { it.toObject(User::class.java) }
+                .distinctBy { it.email } // This removes duplicates based on email
         } catch (e: Exception) {
             e.printStackTrace()
             emptyList()
