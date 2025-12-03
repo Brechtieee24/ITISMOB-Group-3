@@ -13,9 +13,10 @@
         android:id="@+id/log_residency_container_lnr"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="130dp"
+        android:layout_marginTop="120dp"
         android:orientation="vertical"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="52dp">
 
         <TextView
             android:id="@+id/log_residency_name_lbl_tv"

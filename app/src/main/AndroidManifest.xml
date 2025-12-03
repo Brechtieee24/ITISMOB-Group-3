@@ -22,7 +22,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LOVELink">
 
-        <receiver android:name=".GeofenceBroadcastReceiver" android:exported="false"/>
+        <receiver
+            android:name=".geofencing.GeofenceBroadcastReceiver"
+            android:exported="false" />
+
+
 
         <activity android:name=".HomeActivity" />
 
