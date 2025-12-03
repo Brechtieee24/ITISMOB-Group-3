@@ -13,7 +13,7 @@
         tools:layout_editor_absoluteY="1dp" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/committeeName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="100dp"
@@ -37,7 +37,7 @@
         app:layout_constraintBottom_toTopOf="@+id/imageView13"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView">
+        app:layout_constraintTop_toBottomOf="@+id/committeeName">
 
         <TextView
             android:id="@+id/textView2"
@@ -89,13 +89,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/imageView14"
+        app:layout_constraintBottom_toTopOf="@+id/returnbtn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/filter_mbr_btn" />
 
     <ImageView
-        android:id="@+id/imageView14"
+        android:id="@+id/returnbtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="30dp"

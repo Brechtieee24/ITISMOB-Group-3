@@ -15,7 +15,6 @@ class MembersPageActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.navbar.navBarContainerLnr.visibility = View.GONE
-
         // Show/hide nav bar options
         binding.navbar.menuIconNavImgbtn.setOnClickListener {
             val menuSection = binding.navbar.navBarContainerLnr
@@ -25,11 +24,13 @@ class MembersPageActivity : AppCompatActivity() {
                 } else View.VISIBLE
         }
 
+        binding.returnbtn.setOnClickListener {
+            finish()
+        }
+
         // Get the committee name passed from ViewMembersActivity
         val committeeName = intent.getStringExtra("COMMITTEE_NAME")
-
-        // Use binding to access the TextView and set its text
-        binding.textView.text = committeeName ?: "Members" // Display the committee name as the title
+        binding.committeeName.text = committeeName ?: "Members"
 
         // --- TODO: Add RecyclerView and Firebase logic here in the next step ---
     }
