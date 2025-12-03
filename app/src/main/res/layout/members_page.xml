@@ -7,32 +7,37 @@
     android:background="#B0C4BB">
 
     <include
+        android:id="@+id/navbar"
         layout="@layout/page_header"
-        tools:layout_editor_absoluteX="231dp"
-        tools:layout_editor_absoluteY="65dp" />
+        tools:layout_editor_absoluteX="125dp"
+        tools:layout_editor_absoluteY="1dp" />
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="110dp"
+        android:layout_marginBottom="2dp"
         android:fontFamily="@font/arvo"
         android:text="TextView"
         android:textColor="#465D5D"
         android:textSize="36sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
+        android:id="@+id/linearLayout3"
         android:layout_width="408dp"
         android:layout_height="429dp"
+        android:layout_marginBottom="16dp"
         android:background="#6C9293"
         android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/imageView13"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="155dp">
+        app:layout_constraintStart_toStartOf="parent">
 
         <TextView
             android:id="@+id/textView2"
@@ -83,18 +88,20 @@
         android:id="@+id/imageView13"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/imageView14"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/filter_mbr_btn"
-        tools:layout_editor_absoluteY="600dp" />
+        app:srcCompat="@drawable/filter_mbr_btn" />
 
     <ImageView
         android:id="@+id/imageView14"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/returnbtn_view_members_page"
-        tools:layout_editor_absoluteY="654dp" />
+        app:srcCompat="@drawable/returnbtn_view_members_page" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

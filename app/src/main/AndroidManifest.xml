@@ -56,6 +56,9 @@
             android:name=".ViewOtherProfileActivity"
             android:exported="false" />
 
+        <activity android:name=".MembersPageActivity"
+            android:exported="false"/>
+
     </application>
 
 </manifest>
