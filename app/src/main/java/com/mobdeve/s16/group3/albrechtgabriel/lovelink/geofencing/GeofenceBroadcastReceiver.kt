@@ -15,7 +15,7 @@ import com.google.android.gms.location.GeofencingEvent
 class GeofenceBroadcastReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
-        if (intent == null) return
+        if (intent == null || context == null) return
 
         val geofencingEvent = GeofencingEvent.fromIntent(intent) ?: return
 
@@ -24,23 +24,36 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
             return
         }
 
-        // Safe call (?.) or non-null assertion (!!)
         val transition = geofencingEvent.geofenceTransition
+
         when (transition) {
-            Geofence.GEOFENCE_TRANSITION_ENTER -> showNotification(context, "You have ENTERED the geofence")
-            Geofence.GEOFENCE_TRANSITION_EXIT -> showNotification(context, "You have EXITED the geofence")
-            else -> Log.d("GEOFENCE", "Unknown geofence transition: $transition")
+            Geofence.GEOFENCE_TRANSITION_ENTER -> {
+                sendGeofenceStatus(context, true)
+                showNotification(context, "You have ENTERED the geofence")
+            }
+
+            Geofence.GEOFENCE_TRANSITION_EXIT -> {
+                sendGeofenceStatus(context, false)
+                showNotification(context, "You have EXITED the geofence")
+            }
+
+            else -> {
+                Log.d("GEOFENCE", "Unknown geofence transition: $transition")
+            }
         }
     }
 
-    // Function to display a notification
-    private fun showNotification(context: Context?, message: String) {
-        if (context == null) return
+    private fun sendGeofenceStatus(context: Context, inside: Boolean) {
+        val intent = Intent("GEOFENCE_STATUS")
+        intent.putExtra("inside", inside)
+        context.sendBroadcast(intent)
+    }
 
+    private fun showNotification(context: Context, message: String) {
         val channelId = "geofence_channel"
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        // Create notification channel for Android 8+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 channelId,
@@ -50,14 +63,16 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
             notificationManager.createNotificationChannel(channel)
         }
 
-        /*/ Build and show the notification
+        // Notification disabled for now
+        /*
         val notification = NotificationCompat.Builder(context, channelId)
-            .setSmallIcon(R.drawable.ic_dialog_map) // Make sure this drawable exists
+            .setSmallIcon(R.drawable.ic_dialog_map)
             .setContentTitle("Geofence Alert")
             .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .build()
 
-        notificationManager.notify(0, notification) */
+        notificationManager.notify(0, notification)
+        */
     }
 }
