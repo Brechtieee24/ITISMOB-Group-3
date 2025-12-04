@@ -1,5 +1,6 @@
 package com.mobdeve.s16.group3.albrechtgabriel.lovelink.adapter
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,9 +8,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.mobdeve.s16.group3.albrechtgabriel.lovelink.R
+import com.mobdeve.s16.group3.albrechtgabriel.lovelink.ViewOtherProfileActivity
 import com.mobdeve.s16.group3.albrechtgabriel.lovelink.model.User
 
-class MemberAdapter(private var memberList: MutableList<User>, private val isOfficer: Boolean) : RecyclerView.Adapter<MemberAdapter.MemberViewHolder>(){
+class MemberAdapter(private var memberList: MutableList<User>, private val isOfficer: Boolean  = false) : RecyclerView.Adapter<MemberAdapter.MemberViewHolder>(){
     class MemberViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val pfp: ImageView = itemView.findViewById(R.id.pfp)
         val memberName: TextView = itemView.findViewById(R.id.name)
@@ -33,6 +35,15 @@ class MemberAdapter(private var memberList: MutableList<User>, private val isOff
         } else {
             holder.totalHours.visibility = View.VISIBLE
         }
+
+        // Add click listener to open ViewOtherProfileActivity
+        holder.itemView.setOnClickListener {
+            val context = holder.itemView.context
+            val intent = Intent(context, ViewOtherProfileActivity::class.java)
+            intent.putExtra("MEMBER_EMAIL", user.email)
+            context.startActivity(intent)
+        }
+
     }
 
     override fun getItemCount(): Int {

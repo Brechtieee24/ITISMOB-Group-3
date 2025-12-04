@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.mobdeve.s16.group3.albrechtgabriel.lovelink.databinding.MembersPageBinding
 import com.mobdeve.s16.group3.albrechtgabriel.lovelink.controller.UserController
 import com.mobdeve.s16.group3.albrechtgabriel.lovelink.adapter.MemberAdapter
+import com.mobdeve.s16.group3.albrechtgabriel.lovelink.UserPreferences
 import kotlinx.coroutines.launch
 
 class MembersPageActivity : AppCompatActivity() {
@@ -22,7 +23,12 @@ class MembersPageActivity : AppCompatActivity() {
         binding = MembersPageBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // NEW: Get isOfficer from Intent OR SharedPreferences (fallback)
         isOfficer = intent.getBooleanExtra("IS_OFFICER", false)
+        if (!isOfficer) {
+            // If not passed via intent, try SharedPreferences
+            isOfficer = UserPreferences.isOfficer(this)
+        }
 
         memberAdapter = MemberAdapter(mutableListOf(), isOfficer)
         binding.membersRecyclerView.adapter = memberAdapter
@@ -34,6 +40,7 @@ class MembersPageActivity : AppCompatActivity() {
         }
 
         binding.navbar.navBarContainerLnr.visibility = View.GONE
+
         // Show/hide nav bar options
         binding.navbar.menuIconNavImgbtn.setOnClickListener {
             val menuSection = binding.navbar.navBarContainerLnr
@@ -47,7 +54,7 @@ class MembersPageActivity : AppCompatActivity() {
             finish()
         }
 
-        // Get the committee name passed from ViewMembersActivity
+        // Get the committee name
         val committeeName = intent.getStringExtra("COMMITTEE_NAME")
         binding.committeeName.text = committeeName ?: "Members"
 
@@ -62,7 +69,6 @@ class MembersPageActivity : AppCompatActivity() {
 
     private fun loadMembers(committeeName: String, minHours: Int? = null, maxHours: Int? = null) {
         lifecycleScope.launch {
-            // Use your new controller function
             val userList = UserController.filterByCommitteeAndHour(committeeName, minHours, maxHours)
             memberAdapter.updateUsers(userList)
         }
@@ -88,7 +94,11 @@ class MembersPageActivity : AppCompatActivity() {
             val maxHours = maxHoursText.toIntOrNull()
 
             if (minHours != null && maxHours != null && minHours > maxHours) {
-                Toast.makeText(this, "Min hours cannot be greater than Max hours.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    "Min hours cannot be greater than Max hours.",
+                    Toast.LENGTH_SHORT
+                ).show()
                 return@setOnClickListener
             }
             loadMembers(committeeName, minHours, maxHours)

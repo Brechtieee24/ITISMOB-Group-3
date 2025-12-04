@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import com.mobdeve.s16.group3.albrechtgabriel.lovelink.UserPreferences
 import com.mobdeve.s16.group3.albrechtgabriel.lovelink.databinding.ViewMembersPageBinding
 
 class ViewMembersActivity : AppCompatActivity() {
@@ -17,7 +18,12 @@ class ViewMembersActivity : AppCompatActivity() {
         binding = ViewMembersPageBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // ✅ NEW: Get isOfficer from Intent OR SharedPreferences (fallback)
         isOfficer = intent.getBooleanExtra("IS_OFFICER", false)
+        if (!isOfficer) {
+            // If not passed via intent, try SharedPreferences
+            isOfficer = UserPreferences.isOfficer(this)
+        }
 
         binding.navbar.navBarContainerLnr.visibility = View.GONE
 
@@ -36,7 +42,7 @@ class ViewMembersActivity : AppCompatActivity() {
 
         setupCommitteeClickListeners()
 
-        // 2. Hide the temporary test button
+        // Hide the temporary test button
         binding.testViewProfileBtn.visibility = View.GONE
     }
 
