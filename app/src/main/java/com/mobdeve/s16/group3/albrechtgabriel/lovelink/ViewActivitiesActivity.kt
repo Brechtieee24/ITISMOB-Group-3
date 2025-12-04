@@ -67,7 +67,6 @@ class ViewActivitiesActivity : AppCompatActivity() {
                         Toast.makeText(this@ViewActivitiesActivity, "Failed to add event.", Toast.LENGTH_SHORT).show()
                     }
 
-                    // Clear fields and hide the dialog
                     dialogView.activityNameEditText.text.clear()
                     dialogView.dateEditText.text.clear()
                     binding.dialogAddEventContainer.visibility = View.GONE

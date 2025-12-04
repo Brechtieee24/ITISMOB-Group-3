@@ -112,9 +112,22 @@ object UserController {
         }
     }
 
-//    suspend fun filterByCommitteeAndHour(committeeName: String, minHours: Int? = null, maxHours: Int? = null) : List<User> {
-//
-//    }
+    suspend fun filterByCommitteeAndHour(committeeName: String, minHours: Int? = null, maxHours: Int? = null) : List<User> {
+        return try {
+            filterByCommittee(committeeName).filter { user ->
+
+                val userHours = user.totalResidencyTime
+
+                val passesMin = minHours == null || userHours >= minHours
+                val passesMax = maxHours == null || userHours <= maxHours
+
+                passesMin && passesMax
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
+    }
 
     // Update formatted residency for all members of a committee
     suspend fun updateFormattedResidency(committee: String) {
