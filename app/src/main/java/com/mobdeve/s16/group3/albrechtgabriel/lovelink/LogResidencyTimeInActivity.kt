@@ -6,6 +6,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -13,39 +15,36 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat // REQUIRED IMPORT
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.Geofence
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.qrcode.QRCodeWriter
 import com.mobdeve.s16.group3.albrechtgabriel.lovelink.databinding.LogResidencyTimeinBinding
 import com.mobdeve.s16.group3.albrechtgabriel.lovelink.geofencing.GeofenceManager
 import com.mobdeve.s16.group3.albrechtgabriel.lovelink.model.ResidencyHoursController
+import com.mobdeve.s16.group3.albrechtgabriel.lovelink.model.User
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import java.text.SimpleDateFormat
 import java.util.Date
-import android.graphics.Bitmap
-import android.graphics.Color
-import com.google.zxing.BarcodeFormat
-import com.google.zxing.qrcode.QRCodeWriter
+import java.util.Locale
+
 class LogResidencyTimeInActivity : AppCompatActivity() {
 
     private lateinit var binding: LogResidencyTimeinBinding
     private lateinit var geofenceManager: GeofenceManager
-
-    // Status if user is inside the 80m area
     private var isInsideGeofence = false
 
-    // BroadcastReceiver to get geofence enter/exit updates
     private val geofenceStatusReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             val inside = intent?.getBooleanExtra("inside", false) ?: false
             isInsideGeofence = inside
-
-            if (inside) {
-                Toast.makeText(this@LogResidencyTimeInActivity,
-                    "You are INSIDE the residency area.", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this@LogResidencyTimeInActivity,
-                    "You are OUTSIDE the residency area.", Toast.LENGTH_SHORT).show()
-            }
+            val status = if (inside) "INSIDE" else "OUTSIDE"
+            Toast.makeText(context, "You are $status the residency area.", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -68,7 +67,6 @@ class LogResidencyTimeInActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val prefs = getSharedPreferences("prefs", MODE_PRIVATE)
         val userId = prefs.getString("user_id", null)
-        Log.d("SESSION", "User session: $userId")
 
         binding = LogResidencyTimeinBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -76,9 +74,6 @@ class LogResidencyTimeInActivity : AppCompatActivity() {
         geofenceManager = GeofenceManager(this)
         checkPermissionsAndStartGeofence()
 
-        // --- REGISTER BROADCAST RECEIVER (FIXED FOR ANDROID 14) ---
-        // Using ContextCompat handles the API version check automatically.
-        // RECEIVER_NOT_EXPORTED ensures only YOUR app can send this broadcast.
         ContextCompat.registerReceiver(
             this,
             geofenceStatusReceiver,
@@ -86,15 +81,36 @@ class LogResidencyTimeInActivity : AppCompatActivity() {
             ContextCompat.RECEIVER_NOT_EXPORTED
         )
 
-        // Generate QR
+        // --- START REALTIME CLOCK ---
+        startRealTimeClock()
+        // ---------------------------
+
         if (userId != null) {
             val qrBitmap = generateQrCode(userId)
             if (qrBitmap != null) {
                 binding.logResidencyQrHolderIv.setImageBitmap(qrBitmap)
             }
+
+            lifecycleScope.launch {
+                try {
+                    val userSnapshot = FirebaseFirestore.getInstance()
+                        .collection("User")
+                        .document(userId)
+                        .get()
+                        .await()
+                    val user = userSnapshot.toObject(User::class.java)
+                    if (user != null) {
+                        val fullName = "${user.firstName} ${user.lastName}"
+                        val committeeText = if (user.committee.isNotEmpty()) user.committee else "No Committee"
+                        binding.logResidencyNameLblTv.text = "$fullName ($committeeText)"
+                    }
+                } catch (e: Exception) {
+                    binding.logResidencyNameLblTv.text = "Error loading user info"
+                    e.printStackTrace()
+                }
+            }
         }
 
-        // --- TIME IN BUTTON ---
         binding.timeInBtn.setOnClickListener {
             if (userId == null) {
                 Toast.makeText(this, "Error: User ID not found.", Toast.LENGTH_SHORT).show()
@@ -108,25 +124,20 @@ class LogResidencyTimeInActivity : AppCompatActivity() {
             }
             */
 
-            // 2. Database Operation
+            // Database Logic
             lifecycleScope.launch {
                 try {
-                    // Create the record in Firestore
                     val newResidency = ResidencyHoursController.createNewResidency(Date(), userId)
-
                     if (newResidency != null) {
                         Toast.makeText(this@LogResidencyTimeInActivity, "Time In Successful!", Toast.LENGTH_SHORT).show()
-
-                        // Pass the new ID to the next activity so we know which one to close later
                         val intent = Intent(this@LogResidencyTimeInActivity, LogResidencyTimeOutActivity::class.java)
                         intent.putExtra("RESIDENCY_ID", newResidency.id)
                         startActivity(intent)
-                        finish() // Finish this activity so user can't go back easily
+                        finish()
                     } else {
                         Toast.makeText(this@LogResidencyTimeInActivity, "Failed to connect to database.", Toast.LENGTH_SHORT).show()
                     }
                 } catch (e: Exception) {
-                    Log.e("TimeInError", "Error during Time In", e)
                     Toast.makeText(this@LogResidencyTimeInActivity, "An error occurred.", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -154,14 +165,24 @@ class LogResidencyTimeInActivity : AppCompatActivity() {
         }
     }
 
+    // --- NEW FUNCTION FOR REALTIME CLOCK ---
+    private fun startRealTimeClock() {
+        lifecycleScope.launch {
+            while (isActive) {
+                val formatter = SimpleDateFormat("MMMM d, yyyy, hh:mm:ss a", Locale.US)
+                val currentTime = formatter.format(Date())
+
+                binding.presentTimeTv.text = currentTime
+
+                delay(1000) // Updates every second
+            }
+        }
+    }
+    // ---------------------------------------
+
     override fun onDestroy() {
         super.onDestroy()
-        // Unregister to prevent memory leaks
-        try {
-            unregisterReceiver(geofenceStatusReceiver)
-        } catch (e: IllegalArgumentException) {
-            // Receiver might not be registered
-        }
+        try { unregisterReceiver(geofenceStatusReceiver) } catch (e: Exception) {}
     }
 
     private fun generateQrCode(content: String): Bitmap? {
