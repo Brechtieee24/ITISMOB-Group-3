@@ -48,8 +48,11 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.recyclerview)
 
-    // Java Time
+    // Java Date/Time (used in ResidencyHoursController)
     implementation("com.jakewharton.threetenabp:threetenabp:1.4.6")
+
+    // Lifecycle
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
 
     // Gson
     implementation("com.google.code.gson:gson:2.10.1")
@@ -77,6 +80,7 @@ dependencies {
     implementation("com.google.android.gms:play-services-auth:20.6.0")
 
     // Coroutine support for Firebase tasks
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
 
     // Testing
