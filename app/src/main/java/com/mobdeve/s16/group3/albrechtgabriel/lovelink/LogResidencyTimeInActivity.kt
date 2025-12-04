@@ -37,11 +37,15 @@ class LogResidencyTimeInActivity : AppCompatActivity() {
             isInsideGeofence = inside
 
             if (inside) {
-                Toast.makeText(this@LogResidencyTimeInActivity,
-                    "You are INSIDE the residency area.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this@LogResidencyTimeInActivity,
+                    "You are INSIDE the residency area.", Toast.LENGTH_SHORT
+                ).show()
             } else {
-                Toast.makeText(this@LogResidencyTimeInActivity,
-                    "You are OUTSIDE the residency area.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this@LogResidencyTimeInActivity,
+                    "You are OUTSIDE the residency area.", Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -57,11 +61,20 @@ class LogResidencyTimeInActivity : AppCompatActivity() {
         if (fineLocation && backgroundLocation) {
             setupGeofence()
         } else {
-            Toast.makeText(this, "Location permissions are required for geofencing", Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                this,
+                "Location permissions are required for geofencing",
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d(
+            "SESSION",
+            "User session: ${getSharedPreferences("prefs", MODE_PRIVATE).getString("user_id", "none")}"
+        )
+
         super.onCreate(savedInstanceState)
         val prefs = getSharedPreferences("prefs", MODE_PRIVATE)
         val userId = prefs.getString("user_id", null)
@@ -73,51 +86,28 @@ class LogResidencyTimeInActivity : AppCompatActivity() {
         geofenceManager = GeofenceManager(this)
         checkPermissionsAndStartGeofence()
 
-        // --- REGISTER BROADCAST RECEIVER (FIXED FOR ANDROID 14) ---
-        // Using ContextCompat handles the API version check automatically.
-        // RECEIVER_NOT_EXPORTED ensures only YOUR app can send this broadcast.
-        ContextCompat.registerReceiver(
-            this,
-            geofenceStatusReceiver,
-            IntentFilter("GEOFENCE_STATUS"),
-            ContextCompat.RECEIVER_NOT_EXPORTED
-        )
+        // REGISTER BROADCAST RECEIVER (Android 14+ compatible)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(
+                geofenceStatusReceiver,
+                IntentFilter("GEOFENCE_STATUS"),
+                Context.RECEIVER_NOT_EXPORTED
+            )
+        } else {
+            registerReceiver(geofenceStatusReceiver, IntentFilter("GEOFENCE_STATUS"))
+        }
 
-        // --- TIME IN BUTTON ---
+        // TIME IN BUTTON
         binding.timeInBtn.setOnClickListener {
-            if (userId == null) {
-                Toast.makeText(this, "Error: User ID not found.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            // 1. Geofence Check
-            /* if (!isInsideGeofence) {
-                Toast.makeText(this, "You must be inside the office to Time In!", Toast.LENGTH_LONG).show()
-                return@setOnClickListener
-            }
-            */
-
-            // 2. Database Operation
-            lifecycleScope.launch {
-                try {
-                    // Create the record in Firestore
-                    val newResidency = ResidencyHoursController.createNewResidency(Date(), userId)
-
-                    if (newResidency != null) {
-                        Toast.makeText(this@LogResidencyTimeInActivity, "Time In Successful!", Toast.LENGTH_SHORT).show()
-
-                        // Pass the new ID to the next activity so we know which one to close later
-                        val intent = Intent(this@LogResidencyTimeInActivity, LogResidencyTimeOutActivity::class.java)
-                        intent.putExtra("RESIDENCY_ID", newResidency.id)
-                        startActivity(intent)
-                        finish() // Finish this activity so user can't go back easily
-                    } else {
-                        Toast.makeText(this@LogResidencyTimeInActivity, "Failed to connect to database.", Toast.LENGTH_SHORT).show()
-                    }
-                } catch (e: Exception) {
-                    Log.e("TimeInError", "Error during Time In", e)
-                    Toast.makeText(this@LogResidencyTimeInActivity, "An error occurred.", Toast.LENGTH_SHORT).show()
-                }
+            if (isInsideGeofence) {
+                Toast.makeText(this, "Time In SUCCESSFUL!", Toast.LENGTH_SHORT).show()
+                // Perform time-in logic here
+            } else {
+                Toast.makeText(
+                    this,
+                    "You must be inside the office to Time In!",
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
 
