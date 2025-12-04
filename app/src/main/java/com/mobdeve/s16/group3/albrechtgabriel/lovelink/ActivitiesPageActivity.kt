@@ -21,18 +21,18 @@ class ActivitiesPageActivity : AppCompatActivity() {
 
         isOfficer = intent.getBooleanExtra("IS_OFFICER", false)
         val eventId = intent.getStringExtra(ViewActivitiesActivity.EVENT_ID_KEY)
-        val dialogView = binding.addEventDialog
+        val dialogView = binding.addDescDialog
 
         if (!isOfficer) {
             binding.addDescriptionbtn.visibility = View.GONE
         }
 
         binding.addDescriptionbtn.setOnClickListener {
-            binding.dialogAddEventContainer.visibility = View.VISIBLE
+            binding.dialogAddDescContainer.visibility = View.VISIBLE
         }
 
         dialogView.closebtn.setOnClickListener {
-            binding.dialogAddEventContainer.visibility = View.GONE
+            binding.dialogAddDescContainer.visibility = View.GONE
         }
 
         dialogView.confirmbtn.setOnClickListener {
@@ -42,7 +42,6 @@ class ActivitiesPageActivity : AppCompatActivity() {
                 lifecycleScope.launch {
                     val success = EventController.updateEventDescription(eventId, newDescription)
                     if (success) {
-                        // Update the UI immediately with the new description
                         binding.activityDescription.text = newDescription
                         Toast.makeText(this@ActivitiesPageActivity, "Description updated!", Toast.LENGTH_SHORT).show()
                     } else {
@@ -52,7 +51,7 @@ class ActivitiesPageActivity : AppCompatActivity() {
             }
 
             dialogView.descriptionEditText.text.clear()
-            binding.dialogAddEventContainer.visibility = View.GONE
+            binding.dialogAddDescContainer.visibility = View.GONE
         }
 
         binding.navbar.navBarContainerLnr.visibility = View.GONE

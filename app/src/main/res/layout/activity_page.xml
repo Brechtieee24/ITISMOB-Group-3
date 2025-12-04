@@ -104,7 +104,7 @@
     </ScrollView>
 
     <FrameLayout
-        android:id="@+id/dialogAddEventContainer"
+        android:id="@+id/dialogAddDescContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#99000000"
@@ -116,8 +116,8 @@
         tools:visibility="visible">
 
         <include
-            android:id="@+id/add_event_dialog"
-            layout="@layout/dialog_add_event"
+            android:id="@+id/add_desc_dialog"
+            layout="@layout/dialog_add_desc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
