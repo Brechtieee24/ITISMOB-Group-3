@@ -1,21 +1,26 @@
 package com.mobdeve.s16.group3.albrechtgabriel.lovelink
 
-import android.content.Intent
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import com.mobdeve.s16.group3.albrechtgabriel.lovelink.databinding.LogResidencyTimeinBinding
 import android.Manifest
-import android.content.pm.PackageManager
-import android.os.Build
 import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
+import android.os.Build
+import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat // REQUIRED IMPORT
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.Geofence
+import com.mobdeve.s16.group3.albrechtgabriel.lovelink.databinding.LogResidencyTimeinBinding
 import com.mobdeve.s16.group3.albrechtgabriel.lovelink.geofencing.GeofenceManager
+import com.mobdeve.s16.group3.albrechtgabriel.lovelink.model.ResidencyHoursController
+import kotlinx.coroutines.launch
+import java.util.Date
 
 class LogResidencyTimeInActivity : AppCompatActivity() {
 
@@ -57,25 +62,62 @@ class LogResidencyTimeInActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d("SESSION", "User session: ${getSharedPreferences("prefs", MODE_PRIVATE).getString("user_id", "none")}")
-
         super.onCreate(savedInstanceState)
+        val prefs = getSharedPreferences("prefs", MODE_PRIVATE)
+        val userId = prefs.getString("user_id", null)
+        Log.d("SESSION", "User session: $userId")
+
         binding = LogResidencyTimeinBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         geofenceManager = GeofenceManager(this)
         checkPermissionsAndStartGeofence()
 
-        // REGISTER BROADCAST RECEIVER
-        registerReceiver(geofenceStatusReceiver, IntentFilter("GEOFENCE_STATUS"))
+        // --- REGISTER BROADCAST RECEIVER (FIXED FOR ANDROID 14) ---
+        // Using ContextCompat handles the API version check automatically.
+        // RECEIVER_NOT_EXPORTED ensures only YOUR app can send this broadcast.
+        ContextCompat.registerReceiver(
+            this,
+            geofenceStatusReceiver,
+            IntentFilter("GEOFENCE_STATUS"),
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
 
-        // TIME IN BUTTON
+        // --- TIME IN BUTTON ---
         binding.timeInBtn.setOnClickListener {
-            if (isInsideGeofence) {
-                Toast.makeText(this, "Time In SUCCESSFUL!", Toast.LENGTH_SHORT).show()
-                // Perform time-in logic here
-            } else {
+            if (userId == null) {
+                Toast.makeText(this, "Error: User ID not found.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // 1. Geofence Check
+            /* if (!isInsideGeofence) {
                 Toast.makeText(this, "You must be inside the office to Time In!", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
+            */
+
+            // 2. Database Operation
+            lifecycleScope.launch {
+                try {
+                    // Create the record in Firestore
+                    val newResidency = ResidencyHoursController.createNewResidency(Date(), userId)
+
+                    if (newResidency != null) {
+                        Toast.makeText(this@LogResidencyTimeInActivity, "Time In Successful!", Toast.LENGTH_SHORT).show()
+
+                        // Pass the new ID to the next activity so we know which one to close later
+                        val intent = Intent(this@LogResidencyTimeInActivity, LogResidencyTimeOutActivity::class.java)
+                        intent.putExtra("RESIDENCY_ID", newResidency.id)
+                        startActivity(intent)
+                        finish() // Finish this activity so user can't go back easily
+                    } else {
+                        Toast.makeText(this@LogResidencyTimeInActivity, "Failed to connect to database.", Toast.LENGTH_SHORT).show()
+                    }
+                } catch (e: Exception) {
+                    Log.e("TimeInError", "Error during Time In", e)
+                    Toast.makeText(this@LogResidencyTimeInActivity, "An error occurred.", Toast.LENGTH_SHORT).show()
+                }
             }
         }
 
@@ -103,7 +145,12 @@ class LogResidencyTimeInActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        unregisterReceiver(geofenceStatusReceiver)
+        // Unregister to prevent memory leaks
+        try {
+            unregisterReceiver(geofenceStatusReceiver)
+        } catch (e: IllegalArgumentException) {
+            // Receiver might not be registered
+        }
     }
 
     private fun checkPermissionsAndStartGeofence() {

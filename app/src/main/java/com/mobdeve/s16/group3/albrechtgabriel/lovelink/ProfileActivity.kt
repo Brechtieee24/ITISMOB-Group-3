@@ -116,6 +116,7 @@ class ProfileActivity : AppCompatActivity() {
                     monthlyResidencyAdapter.notifyDataSetChanged()
 
                     // Populate activity list (sample data)
+                    // Change this to sample data
                     activityList.clear()
                     activityList.addAll(
                         arrayListOf(
