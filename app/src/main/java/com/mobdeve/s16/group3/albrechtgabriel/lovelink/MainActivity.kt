@@ -1,5 +1,6 @@
 package com.mobdeve.s16.group3.albrechtgabriel.lovelink
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -77,9 +78,17 @@ class MainActivity : AppCompatActivity() {
                             // Check if user exists in your database
                             val user = UserController.getUserByEmail(userEmail)
                             if (user != null) {
+                                val sharedPreferences = getSharedPreferences("prefs", Context.MODE_PRIVATE)
+                                with(sharedPreferences.edit()) {
+                                    // This relies on user.id being populated with the Document ID (See Step 2)
+                                    putString("user_id", user.id)
+                                    apply()
+                                }
+
                                 // User exists → go to HomeActivity'
                                 val intent = Intent(this@MainActivity, HomeActivity::class.java)
                                 intent.putExtra("IS_OFFICER", user.isOfficer)
+                                Toast.makeText(this@MainActivity, "Successfully Logged In: " + user.email, Toast.LENGTH_SHORT).show()
                                 startActivity(intent)
                                 finish()
                             }

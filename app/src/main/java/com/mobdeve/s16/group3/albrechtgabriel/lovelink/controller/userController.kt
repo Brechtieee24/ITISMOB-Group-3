@@ -101,11 +101,31 @@ object UserController {
     }
 
     // Filter members by committee and minimum hours
-    suspend fun filterByCommitteeAndHour(committeeName: String, hours: Int): List<User> {
-        val minSeconds = hours * 3600
+//    suspend fun filterByCommitteeAndHour(committeeName: String, hours: Int): List<User> {
+//        val minSeconds = hours * 3600
+//        return try {
+//            filterByCommittee(committeeName)
+//                .filter { it.totalResidencyTime >= minSeconds }
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//            emptyList()
+//        }
+//    }
+
+    suspend fun filterByCommitteeAndHour(committeeName: String, minHours: Int? = null, maxHours: Int? = null): List<User> {
+        val minSeconds = minHours?.times(3600)
+        val maxSeconds = maxHours?.times(3600)
+
         return try {
-            filterByCommittee(committeeName)
-                .filter { it.totalResidencyTime >= minSeconds }
+            filterByCommittee(committeeName).filter { user ->
+
+                val userTotalSeconds = user.totalResidencyTime
+
+                val passesMin = minSeconds == null || userTotalSeconds >= minSeconds
+                val passesMax = maxSeconds == null || userTotalSeconds <= maxSeconds
+
+                passesMin && passesMax
+            }
         } catch (e: Exception) {
             e.printStackTrace()
             emptyList()

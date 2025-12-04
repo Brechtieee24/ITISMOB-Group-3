@@ -37,7 +37,6 @@
             android:id="@+id/log_activity_home_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#14A866"
             android:backgroundTint="#AFC3BA"
             android:visibility="gone"
             app:srcCompat="@drawable/logactivitybtn" />

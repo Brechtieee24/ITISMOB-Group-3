@@ -1,9 +1,11 @@
 package com.mobdeve.s16.group3.albrechtgabriel.lovelink.controller
 
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.mobdeve.s16.group3.albrechtgabriel.lovelink.model.Event
 import com.mobdeve.s16.group3.albrechtgabriel.lovelink.model.EventConstants
 import kotlinx.coroutines.tasks.await
+import java.util.Date
 
 object EventController {
 
@@ -13,7 +15,7 @@ object EventController {
     // Add a new event
     suspend fun addEvent(eventName: String, date: String, description: String = ""): Boolean {
         return try {
-            val event = Event(eventName = eventName, date = date, description = description)
+            val event = Event(eventName = eventName, date = date, description = description, timestamp = Date())
             eventsCollection()
                 .add(event)
                 .await()  // suspend until complete
@@ -29,6 +31,7 @@ object EventController {
     suspend fun getEvents(): List<Event> {
         return try {
             val snapshot = eventsCollection()
+                .orderBy("timestamp", Query.Direction.DESCENDING)
                 .get()
                 .await()
             snapshot.documents.mapNotNull { it.toObject(Event::class.java) }
@@ -49,6 +52,19 @@ object EventController {
         } catch (e: Exception) {
             println("Error fetching event by ID: ${e.message}")
             null
+        }
+    }
+
+    suspend fun updateEventDescription(eventId: String, newDescription: String): Boolean {
+        return try {
+            eventsCollection().document(eventId)
+                .update("description", newDescription)
+                .await()
+            println("Successfully updated event description")
+            true
+        } catch (e: Exception) {
+            println("Error updating event description: ${e.message}")
+            false
         }
     }
 }

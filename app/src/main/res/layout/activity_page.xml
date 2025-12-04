@@ -85,7 +85,7 @@
                 android:textSize="14sp" />
 
             <ImageView
-                android:id="@+id/addDescriptionBtn"
+                android:id="@+id/addDescriptionbtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
@@ -102,4 +102,26 @@
                 android:src="@drawable/return_btn_activities_page_b" />
         </LinearLayout>
     </ScrollView>
+
+    <FrameLayout
+        android:id="@+id/dialogAddDescContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#99000000"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:visibility="visible">
+
+        <include
+            android:id="@+id/add_desc_dialog"
+            layout="@layout/dialog_add_desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="32dp" />
+
+    </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

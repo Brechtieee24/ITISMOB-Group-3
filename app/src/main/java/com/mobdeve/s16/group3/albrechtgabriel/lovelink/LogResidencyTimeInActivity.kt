@@ -13,9 +13,14 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat // REQUIRED IMPORT
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.Geofence
 import com.mobdeve.s16.group3.albrechtgabriel.lovelink.databinding.LogResidencyTimeinBinding
 import com.mobdeve.s16.group3.albrechtgabriel.lovelink.geofencing.GeofenceManager
+import com.mobdeve.s16.group3.albrechtgabriel.lovelink.model.ResidencyHoursController
+import kotlinx.coroutines.launch
+import java.util.Date
 
 class LogResidencyTimeInActivity : AppCompatActivity() {
 
@@ -71,6 +76,10 @@ class LogResidencyTimeInActivity : AppCompatActivity() {
         )
 
         super.onCreate(savedInstanceState)
+        val prefs = getSharedPreferences("prefs", MODE_PRIVATE)
+        val userId = prefs.getString("user_id", null)
+        Log.d("SESSION", "User session: $userId")
+
         binding = LogResidencyTimeinBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -126,7 +135,12 @@ class LogResidencyTimeInActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        unregisterReceiver(geofenceStatusReceiver)
+        // Unregister to prevent memory leaks
+        try {
+            unregisterReceiver(geofenceStatusReceiver)
+        } catch (e: IllegalArgumentException) {
+            // Receiver might not be registered
+        }
     }
 
     private fun checkPermissionsAndStartGeofence() {
