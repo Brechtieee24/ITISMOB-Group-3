@@ -2,6 +2,7 @@ package com.mobdeve.s16.group3.albrechtgabriel.lovelink
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.mobdeve.s16.group3.albrechtgabriel.lovelink.controller.EventController
@@ -19,9 +20,39 @@ class ActivitiesPageActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         isOfficer = intent.getBooleanExtra("IS_OFFICER", false)
+        val eventId = intent.getStringExtra(ViewActivitiesActivity.EVENT_ID_KEY)
+        val dialogView = binding.addEventDialog
 
         if (!isOfficer) {
             binding.addDescriptionbtn.visibility = View.GONE
+        }
+
+        binding.addDescriptionbtn.setOnClickListener {
+            binding.dialogAddEventContainer.visibility = View.VISIBLE
+        }
+
+        dialogView.closebtn.setOnClickListener {
+            binding.dialogAddEventContainer.visibility = View.GONE
+        }
+
+        dialogView.confirmbtn.setOnClickListener {
+            val newDescription = dialogView.descriptionEditText.text.toString()
+
+            if (eventId != null && newDescription.isNotBlank()) {
+                lifecycleScope.launch {
+                    val success = EventController.updateEventDescription(eventId, newDescription)
+                    if (success) {
+                        // Update the UI immediately with the new description
+                        binding.activityDescription.text = newDescription
+                        Toast.makeText(this@ActivitiesPageActivity, "Description updated!", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this@ActivitiesPageActivity, "Failed to update description.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+
+            dialogView.descriptionEditText.text.clear()
+            binding.dialogAddEventContainer.visibility = View.GONE
         }
 
         binding.navbar.navBarContainerLnr.visibility = View.GONE
@@ -37,8 +68,6 @@ class ActivitiesPageActivity : AppCompatActivity() {
         binding.returnbtn.setOnClickListener {
             finish()
         }
-
-        val eventId = intent.getStringExtra(ViewActivitiesActivity.EVENT_ID_KEY)
 
         if (eventId != null) {
             lifecycleScope.launch {

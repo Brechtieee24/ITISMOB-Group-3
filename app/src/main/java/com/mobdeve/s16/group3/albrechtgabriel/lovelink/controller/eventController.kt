@@ -51,4 +51,17 @@ object EventController {
             null
         }
     }
+
+    suspend fun updateEventDescription(eventId: String, newDescription: String): Boolean {
+        return try {
+            eventsCollection().document(eventId)
+                .update("description", newDescription)
+                .await()
+            println("Successfully updated event description")
+            true
+        } catch (e: Exception) {
+            println("Error updating event description: ${e.message}")
+            false
+        }
+    }
 }
