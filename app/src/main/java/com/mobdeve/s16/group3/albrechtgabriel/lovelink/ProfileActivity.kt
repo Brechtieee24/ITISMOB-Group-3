@@ -72,6 +72,7 @@ class ProfileActivity : AppCompatActivity() {
 
         // Return button
         binding.returnBtn.setOnClickListener {
+            startActivity(Intent(this, MainActivity::class.java))
             finish()
         }
     }
