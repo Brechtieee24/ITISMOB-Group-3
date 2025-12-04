@@ -19,6 +19,7 @@ class ViewMembersActivity : AppCompatActivity() {
         binding = ViewMembersPageBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.testViewProfileBtn.visibility = View.GONE
         binding.navbar.navBarContainerLnr.visibility = View.GONE
 
         // Get isOfficer from intent if passed

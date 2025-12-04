@@ -39,7 +39,7 @@
             android:layout_height="wrap_content"
             android:backgroundTint="#AFC3BA"
             android:visibility="gone"
-            app:srcCompat="@drawable/logactivitybtn" />
+            app:srcCompat="@drawable/log_residency_btn_f" />
 
         <!-- MEMBER VIEW: Activity History Button -->
         <ImageButton
