@@ -3,6 +3,7 @@ package com.mobdeve.s16.group3.albrechtgabriel.lovelink
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.glance.visibility
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mobdeve.s16.group3.albrechtgabriel.lovelink.databinding.MembersPageBinding
@@ -22,6 +23,15 @@ class MembersPageActivity : AppCompatActivity() {
 
         isOfficer = intent.getBooleanExtra("IS_OFFICER", false)
 
+        val memberAdapter = MemberAdapter(mutableListOf(), isOfficer)
+        binding.membersRecyclerView.adapter = memberAdapter
+        binding.membersRecyclerView.layoutManager = LinearLayoutManager(this)
+
+        if (!isOfficer) {
+            binding.totalHoursHeader.visibility = View.GONE
+            binding.filterMembersbtn.visibility = View.GONE
+        }
+
         binding.navbar.navBarContainerLnr.visibility = View.GONE
         // Show/hide nav bar options
         binding.navbar.menuIconNavImgbtn.setOnClickListener {
@@ -39,10 +49,6 @@ class MembersPageActivity : AppCompatActivity() {
         // Get the committee name passed from ViewMembersActivity
         val committeeName = intent.getStringExtra("COMMITTEE_NAME")
         binding.committeeName.text = committeeName ?: "Members"
-
-        val memberAdapter = MemberAdapter(mutableListOf())
-        binding.membersRecyclerView.adapter = memberAdapter
-        binding.membersRecyclerView.layoutManager = LinearLayoutManager(this)
 
         if (committeeName != null) {
             lifecycleScope.launch {
