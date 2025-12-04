@@ -10,11 +10,14 @@ import com.mobdeve.s16.group3.albrechtgabriel.lovelink.databinding.ViewMembersPa
 class ViewMembersActivity : AppCompatActivity() {
 
     private lateinit var binding: ViewMembersPageBinding
+    private var isOfficer: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ViewMembersPageBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        isOfficer = intent.getBooleanExtra("IS_OFFICER", false)
 
         binding.navbar.navBarContainerLnr.visibility = View.GONE
 
@@ -68,6 +71,7 @@ class ViewMembersActivity : AppCompatActivity() {
     private fun openMembersPageFor(committeeName: String) {
         val intent = Intent(this, MembersPageActivity::class.java).apply {
             putExtra("COMMITTEE_NAME", committeeName)
+            putExtra("IS_OFFICER", isOfficer)
         }
         startActivity(intent)
     }

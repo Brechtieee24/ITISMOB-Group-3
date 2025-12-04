@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 
 class ViewActivitiesActivity : AppCompatActivity() {
     private lateinit var binding: ViewActivitiesPageBinding
+    private var isOfficer: Boolean = false
 
     companion object {
         const val EVENT_ID_KEY = "EVENT_ID"
@@ -22,6 +23,8 @@ class ViewActivitiesActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ViewActivitiesPageBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        isOfficer = intent.getBooleanExtra("IS_OFFICER", false)
 
         binding.navbar.navBarContainerLnr.visibility = View.GONE
         // Show/hide nav bar options
@@ -39,7 +42,8 @@ class ViewActivitiesActivity : AppCompatActivity() {
 
         val activitiesAdapter = ActivitiesAdapter(mutableListOf()) { event ->
             val intent = Intent(this, ActivitiesPageActivity::class.java)
-            intent.putExtra(EVENT_ID_KEY, event.id) // Pass the document ID
+            intent.putExtra(EVENT_ID_KEY, event.id)
+            intent.putExtra("IS_OFFICER", isOfficer)
             startActivity(intent)
         }
 

@@ -14,6 +14,7 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = HomePageBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val isOfficer = intent.getBooleanExtra("IS_OFFICER", false)
 
         binding.navbar.navBarContainerLnr.visibility = View.GONE
 
@@ -36,16 +37,16 @@ class HomeActivity : AppCompatActivity() {
             // startActivity(intent)
         }
 
-        // TODO for Josh: Navigate to View Activities page
         binding.viewActivitiesBtn.setOnClickListener {
-            // TODO: Add ViewActivitiesActivity when implemented
-             val intent = Intent(this, ViewActivitiesActivity::class.java)
-             startActivity(intent)
+            val intent = Intent(this, ViewActivitiesActivity::class.java)
+            intent.putExtra("IS_OFFICER", isOfficer)
+            startActivity(intent)
         }
 
         // Show the View Members Page
         binding.viewOtherMembersBtn.setOnClickListener {
             val intent = Intent(this, ViewMembersActivity::class.java)
+            intent.putExtra("IS_OFFICER", isOfficer)
             startActivity(intent)
         }
 

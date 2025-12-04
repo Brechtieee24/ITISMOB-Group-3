@@ -13,11 +13,14 @@ import kotlinx.coroutines.launch
 class MembersPageActivity : AppCompatActivity() {
 
     private lateinit var binding: MembersPageBinding
+    private var isOfficer: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = MembersPageBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        isOfficer = intent.getBooleanExtra("IS_OFFICER", false)
 
         binding.navbar.navBarContainerLnr.visibility = View.GONE
         // Show/hide nav bar options

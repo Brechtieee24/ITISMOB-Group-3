@@ -77,8 +77,10 @@ class MainActivity : AppCompatActivity() {
                             // Check if user exists in your database
                             val user = UserController.getUserByEmail(userEmail)
                             if (user != null) {
-                                // User exists → go to HomeActivity
-                                startActivity(Intent(this@MainActivity, HomeActivity::class.java))
+                                // User exists → go to HomeActivity'
+                                val intent = Intent(this@MainActivity, HomeActivity::class.java)
+                                intent.putExtra("IS_OFFICER", user.isOfficer)
+                                startActivity(intent)
                                 finish()
                             }
                         } else {
