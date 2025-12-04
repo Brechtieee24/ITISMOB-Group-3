@@ -3,7 +3,6 @@ package com.mobdeve.s16.group3.albrechtgabriel.lovelink
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.glance.visibility
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mobdeve.s16.group3.albrechtgabriel.lovelink.databinding.MembersPageBinding
