@@ -61,4 +61,26 @@
         app:layout_constraintTop_toBottomOf="@+id/addEventbtn"
         app:srcCompat="@drawable/returnbtn_view_members_page" />
 
+    <FrameLayout
+        android:id="@+id/dialogAddEventContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#99000000"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible">
+
+        <include
+            android:id="@+id/add_event_dialog"
+            layout="@layout/dialog_add_event"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="32dp" />
+
+    </FrameLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -29,6 +29,7 @@ object EventController {
     suspend fun getEvents(): List<Event> {
         return try {
             val snapshot = eventsCollection()
+                .orderBy("eventName")
                 .get()
                 .await()
             snapshot.documents.mapNotNull { it.toObject(Event::class.java) }
