@@ -37,51 +37,49 @@ object UserSeeder {
                     isOfficer = userJson.isOfficer ?: false,
                     aboutInfo = userJson.aboutInfo ?: "Hello",
                     lastLogin = lastLoginDate,
-                    formattedResidencyTime = userJson.formattedResidencyTime ?: "00:00:00",
+                    formattedResidencyTime = userJson.formattedResidencyTime ?: "",
                     totalResidencyTime = userJson.totalResidencyTime ?: 0,
                 )
 
-                // Use email as document ID for easy lookup
-                usersCollection.document(user.email).set(user).await()
+                usersCollection.add(user).await()
             }
 
-            println("All users uploaded successfully!")
+            println("✅ All users uploaded successfully!")
 
         } catch (e: Exception) {
             e.printStackTrace()
-            println("Error seeding users: ${e.message}")
         }
     }
 
     suspend fun migrateUsersToEmailId() {
-        try {
-            val snapshot = usersCollection.get().await()
+        val db = FirebaseFirestore.getInstance()
+        val usersCollection = db.collection("users")
 
-            for (doc in snapshot.documents) {
-                val user = doc.toObject(User::class.java) ?: continue
-                val email = user.email.trim().lowercase()
+        val snapshot = usersCollection.get().await()
 
-                if (email.isBlank()) continue
+        for (doc in snapshot.documents) {
+            val user = doc.toObject(User::class.java) ?: continue
+            val email = user.email.trim().lowercase()
 
-                val newDocRef = usersCollection.document(email)
+            if (email.isBlank()) continue
 
-                // Prevent overwrite
-                if (!newDocRef.get().await().exists()) {
-                    newDocRef.set(user).await()
-                }
+            val newDocRef = usersCollection.document(email)
 
-                // Delete old doc if different
-                if (doc.id != email) {
-                    doc.reference.delete().await()
-                }
+            // Prevent overwrite
+            if (!newDocRef.get().await().exists()) {
+                newDocRef.set(user).await()
             }
 
-            println("Migration done")
-        } catch (e: Exception) {
-            e.printStackTrace()
-            println("Error migrating users: ${e.message}")
+            // Delete old doc if different
+            if (doc.id != email) {
+                doc.reference.delete().await()
+            }
         }
+
+        println("Migration done!")
     }
+
+
 
     private fun parseDate(jsonDate: Map<String, String>?): Date? {
         return try {

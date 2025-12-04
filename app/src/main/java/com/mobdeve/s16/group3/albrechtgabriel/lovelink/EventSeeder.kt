@@ -32,7 +32,7 @@ object EventSeeder {
                 eventsCollection.add(event).await()
             }
 
-            println("All events uploaded successfully!")
+            println("✅ All events uploaded successfully!")
 
         } catch (e: Exception) {
             e.printStackTrace()

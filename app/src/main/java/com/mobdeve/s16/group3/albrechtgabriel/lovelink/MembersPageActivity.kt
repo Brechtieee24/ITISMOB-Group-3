@@ -29,7 +29,7 @@ class MembersPageActivity : AppCompatActivity() {
         binding.membersRecyclerView.layoutManager = LinearLayoutManager(this)
 
         if (!isOfficer) {
-            binding.totalHoursHeaderTv.visibility = View.GONE
+            binding.totalHoursHeader.visibility = View.GONE
             binding.filterMembersbtn.visibility = View.GONE
         }
 
@@ -62,6 +62,7 @@ class MembersPageActivity : AppCompatActivity() {
 
     private fun loadMembers(committeeName: String, minHours: Int? = null, maxHours: Int? = null) {
         lifecycleScope.launch {
+            // Use your new controller function
             val userList = UserController.filterByCommitteeAndHour(committeeName, minHours, maxHours)
             memberAdapter.updateUsers(userList)
         }

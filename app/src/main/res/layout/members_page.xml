@@ -56,7 +56,7 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/name_header_tv"
+                android:id="@+id/textView3"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -67,7 +67,7 @@
                 android:textSize="18sp" />
 
             <TextView
-                android:id="@+id/total_hours_header_tv"
+                android:id="@+id/totalHoursHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -75,8 +75,7 @@
                 android:text="TOTAL HOURS"
                 android:textAlignment="center"
                 android:textColor="#FFFF"
-                android:textSize="18sp"
-                android:visibility="visible" />
+                android:textSize="18sp" />
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView

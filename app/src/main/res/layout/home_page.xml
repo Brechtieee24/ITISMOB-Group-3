@@ -32,24 +32,14 @@
             android:paddingBottom="10dp"
             app:srcCompat="@drawable/logresidencybtn" />
 
-        <!-- OFFICER VIEW: Log Activity Button -->
         <ImageButton
             android:id="@+id/log_activity_home_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="#AFC3BA"
-            android:visibility="gone"
+            android:paddingTop="10dp"
+            android:paddingEnd="10dp"
             app:srcCompat="@drawable/log_residency_btn_f" />
-
-        <!-- MEMBER VIEW: Activity History Button -->
-        <ImageButton
-            android:id="@+id/activity_history_home_btn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#14A866"
-            android:backgroundTint="#AFC3BA"
-            android:visibility="gone"
-            app:srcCompat="@drawable/acthistorybtn" />
 
         <ImageButton
             android:id="@+id/view_activities_btn"

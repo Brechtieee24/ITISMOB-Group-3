@@ -3,17 +3,9 @@ package com.mobdeve.s16.group3.albrechtgabriel.lovelink
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.mobdeve.s16.group3.albrechtgabriel.lovelink.controller.UserController
 import com.mobdeve.s16.group3.albrechtgabriel.lovelink.databinding.ViewOtherProfilePageBinding
-import com.mobdeve.s16.group3.albrechtgabriel.lovelink.model.ActivityParticipationController
-import com.mobdeve.s16.group3.albrechtgabriel.lovelink.model.ResidencyHoursController
-import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Locale
 import kotlin.jvm.java
 
 class ViewOtherProfileActivity : AppCompatActivity() {
@@ -31,29 +23,21 @@ class ViewOtherProfileActivity : AppCompatActivity() {
         // Hide navbar menu initially
         binding.navbar.navBarContainerLnr.visibility = View.GONE
 
-        // Get member email from intent
-        val memberEmail = intent.getStringExtra("MEMBER_EMAIL")
+        // PLACEHOLDER PA MEMBER- Get member data from intent
+        val memberName = intent.getStringExtra("MEMBER_NAME") ?: "Jules Dela Cruz (MAE)"
 
-        if (memberEmail.isNullOrEmpty()) {
-            Toast.makeText(this, "Member information not available", Toast.LENGTH_SHORT).show()
-            finish()
-            return
-        }
+        // Load member data
+        loadMemberData(memberName)
 
-        // Initialize adapters with empty lists
-        monthlyResidencyList = arrayListOf()
-        activityList = arrayListOf()
-
+        // Setup RecyclerView for monthly residency hours
         monthlyResidencyAdapter = MonthlyResidencyAdapter(monthlyResidencyList)
         binding.otherMonthlyResidencyRecyclerview.layoutManager = LinearLayoutManager(this)
         binding.otherMonthlyResidencyRecyclerview.adapter = monthlyResidencyAdapter
 
+        // Setup RecyclerView for activities list
         activityAdapter = ProfileActivityAdapter(activityList)
         binding.otherActivitiesListRecyclerview.layoutManager = LinearLayoutManager(this)
         binding.otherActivitiesListRecyclerview.adapter = activityAdapter
-
-        // Load member data from Firebase
-        loadMemberDataFromFirebase(memberEmail)
 
         // Show/hide nav bar options
         binding.navbar.menuIconNavImgbtn.setOnClickListener {
@@ -72,83 +56,22 @@ class ViewOtherProfileActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadMemberDataFromFirebase(memberEmail: String) {
-        lifecycleScope.launch {
-            try {
-                // Get user data
-                val user = UserController.getUserByEmail(memberEmail)
-                if (user != null) {
-                    // Set profile info
-                    binding.otherProfileNameTv.text = getString(
-                        R.string.profile_name_template,
-                        user.firstName,
-                        user.lastName,
-                        user.committee
-                    )
-                    binding.otherProfileBioTv.text = user.aboutInfo
+    private fun loadMemberData(memberName: String) {
+        // SAMPLE DATA - replace with actual data from database later
+        binding.otherProfileNameTv.text = memberName
+        binding.otherProfileBioTv.text = "Hi! My name is Jules."
 
-                    // Load monthly residency
-                    val monthlyData = ResidencyHoursController.computeMonthlyResidency(
-                        memberId = memberEmail,
-                        year = 2025,
-                        months = listOf("october", "september", "august")
-                    )
+        monthlyResidencyList = arrayListOf(
+            MonthlyResidency("Oct", 490),
+            MonthlyResidency("Sep", 490),
+            MonthlyResidency("Aug", 490)
+        )
 
-                    monthlyResidencyList.clear()
-                    monthlyData.forEach { (month, formattedTime) ->
-                        // Parse formatted string back to minutes
-                        val minutes = parseFormattedTimeToMinutes(formattedTime)
-                        monthlyResidencyList.add(
-                            MonthlyResidency(
-                                month = month.capitalize(Locale.ROOT).substring(0, 3),
-                                totalMinutes = minutes
-                            )
-                        )
-                    }
-                    monthlyResidencyAdapter.notifyDataSetChanged()
-
-                    // Load activity participation
-                    val events = ActivityParticipationController.getEventsOfUser(memberEmail)
-                    activityList.clear()
-                    events.forEach { event ->
-                        val dateFormat = SimpleDateFormat("M/d/yy", Locale.getDefault())
-                        val formattedDate = try {
-                            dateFormat.format(SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(event.date))
-                        } catch (e: Exception) {
-                            event.date
-                        }
-                        activityList.add("${event.eventName} ($formattedDate)")
-                    }
-                    activityAdapter.notifyDataSetChanged()
-
-                } else {
-                    Toast.makeText(
-                        this@ViewOtherProfileActivity,
-                        "Member not found",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    finish()
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Toast.makeText(
-                    this@ViewOtherProfileActivity,
-                    "Error loading member data: ${e.message}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-    }
-
-    private fun parseFormattedTimeToMinutes(formattedTime: String): Int {
-        return try {
-            // Format is "X hours and Y minutes"
-            val parts = formattedTime.split(" ")
-            val hours = parts[0].toIntOrNull() ?: 0
-            val minutes = parts.getOrNull(3)?.toIntOrNull() ?: 0
-            (hours * 60) + minutes
-        } catch (e: Exception) {
-            0
-        }
+        activityList = arrayListOf(
+            "Event Activity # 4 (9/12/25)",
+            "Event Activity # 3 (9/11/25)",
+            "Event Activity # 2 (9/10/25)",
+            "Event Activity # 1 (9/9/25)"
+        )
     }
 }

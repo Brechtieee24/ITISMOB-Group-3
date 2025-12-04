@@ -3,17 +3,9 @@ package com.mobdeve.s16.group3.albrechtgabriel.lovelink
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.firebase.auth.FirebaseAuth
 import com.mobdeve.s16.group3.albrechtgabriel.lovelink.databinding.ActivityHistoryPageBinding
-import com.mobdeve.s16.group3.albrechtgabriel.lovelink.model.ActivityParticipationController
-import com.mobdeve.s16.group3.albrechtgabriel.lovelink.model.Event
-import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 class ActivityHistoryActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHistoryPageBinding
@@ -32,14 +24,13 @@ class ActivityHistoryActivity : AppCompatActivity() {
         // Get the caller activity name from intent
         callerActivity = intent.getStringExtra("CALLER_ACTIVITY")
 
-        // Initialize adapter with empty list
-        activityList = arrayListOf()
+        // Initialize sample data
+        loadActivityData()
+
+        // Setup RecyclerView
         activityAdapter = ActivityHistoryAdapter(activityList)
         binding.activityHistoryRecyclerview.layoutManager = LinearLayoutManager(this)
         binding.activityHistoryRecyclerview.adapter = activityAdapter
-
-        // Load activity data from Firebase
-        loadActivityDataFromFirebase()
 
         // Show/hide nav bar options
         binding.navbar.menuIconNavImgbtn.setOnClickListener {
@@ -56,76 +47,14 @@ class ActivityHistoryActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadActivityDataFromFirebase() {
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        if (currentUser == null) {
-            Toast.makeText(this, "User not signed in", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        val userEmail = currentUser.email
-        if (userEmail.isNullOrEmpty()) {
-            Toast.makeText(this, "User email not available", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        lifecycleScope.launch {
-            try {
-                // Get member's ID (using email as doc ID)
-                val memberId = userEmail
-
-                // Fetch events from ActivityParticipationController
-                val events: List<Event> = ActivityParticipationController.getEventsOfUser(memberId)
-
-                // Convert to ActivityItem format
-                activityList.clear()
-                events.forEach { event ->
-                    activityList.add(
-                        ActivityItem(
-                            activityName = event.eventName,
-                            activityDate = formatDate(event.date)
-                        )
-                    )
-                }
-
-                // Update adapter
-                activityAdapter.notifyDataSetChanged()
-
-                if (activityList.isEmpty()) {
-                    Toast.makeText(
-                        this@ActivityHistoryActivity,
-                        "No activity history found",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Toast.makeText(
-                    this@ActivityHistoryActivity,
-                    "Error loading activity history: ${e.message}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-    }
-
-    private fun formatDate(dateString: String): String {
-        // Handle different date formats from Firebase
-        return try {
-            // If already in readable format, return as is
-            if (dateString.contains(",")) {
-                dateString
-            } else {
-                // Otherwise format it
-                val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                val outputFormat = SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault())
-                val date = inputFormat.parse(dateString)
-                date?.let { outputFormat.format(it) } ?: dateString
-            }
-        } catch (e: Exception) {
-            dateString // Return original if parsing fails
-        }
+    private fun loadActivityData() {
+        // SAMPLE DATA - replace with actual data from database later
+        activityList = arrayListOf(
+            ActivityItem("Event Activity 4", "September 12, 2025"),
+            ActivityItem("Event Activity 3", "September 11, 2025"),
+            ActivityItem("Event Activity 2", "September 10, 2025"),
+            ActivityItem("Event Activity 1", "September 9, 2025")
+        )
     }
 
     private fun returnToCaller() {
