@@ -76,6 +76,9 @@ dependencies {
     // Google Sign-In
     implementation("com.google.android.gms:play-services-auth:20.6.0")
 
+    // QR Generator
+    implementation("com.google.zxing:core:3.5.1")
+
     // Coroutine support for Firebase tasks
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
 

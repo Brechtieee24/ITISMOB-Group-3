@@ -21,7 +21,10 @@ import com.mobdeve.s16.group3.albrechtgabriel.lovelink.geofencing.GeofenceManage
 import com.mobdeve.s16.group3.albrechtgabriel.lovelink.model.ResidencyHoursController
 import kotlinx.coroutines.launch
 import java.util.Date
-
+import android.graphics.Bitmap
+import android.graphics.Color
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.qrcode.QRCodeWriter
 class LogResidencyTimeInActivity : AppCompatActivity() {
 
     private lateinit var binding: LogResidencyTimeinBinding
@@ -82,6 +85,14 @@ class LogResidencyTimeInActivity : AppCompatActivity() {
             IntentFilter("GEOFENCE_STATUS"),
             ContextCompat.RECEIVER_NOT_EXPORTED
         )
+
+        // Generate QR
+        if (userId != null) {
+            val qrBitmap = generateQrCode(userId)
+            if (qrBitmap != null) {
+                binding.logResidencyQrHolderIv.setImageBitmap(qrBitmap)
+            }
+        }
 
         // --- TIME IN BUTTON ---
         binding.timeInBtn.setOnClickListener {
@@ -150,6 +161,26 @@ class LogResidencyTimeInActivity : AppCompatActivity() {
             unregisterReceiver(geofenceStatusReceiver)
         } catch (e: IllegalArgumentException) {
             // Receiver might not be registered
+        }
+    }
+
+    private fun generateQrCode(content: String): Bitmap? {
+        val width = 512
+        val height = 512
+        val writer = QRCodeWriter()
+        return try {
+            val bitMatrix = writer.encode(content, BarcodeFormat.QR_CODE, width, height)
+            val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565)
+            for (x in 0 until width) {
+                for (y in 0 until height) {
+                    // Set pixel color: Black for data, White for background
+                    bitmap.setPixel(x, y, if (bitMatrix[x, y]) Color.BLACK else Color.WHITE)
+                }
+            }
+            bitmap
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
     }
 
