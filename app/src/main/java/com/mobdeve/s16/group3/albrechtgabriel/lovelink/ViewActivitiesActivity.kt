@@ -26,6 +26,10 @@ class ViewActivitiesActivity : AppCompatActivity() {
 
         isOfficer = intent.getBooleanExtra("IS_OFFICER", false)
 
+        if (!isOfficer) {
+            binding.addEventbtn.visibility = View.GONE
+        }
+
         binding.navbar.navBarContainerLnr.visibility = View.GONE
         // Show/hide nav bar options
         binding.navbar.menuIconNavImgbtn.setOnClickListener {

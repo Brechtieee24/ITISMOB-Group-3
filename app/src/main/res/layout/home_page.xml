@@ -38,7 +38,7 @@
             android:layout_height="wrap_content"
             android:background="#14A866"
             android:backgroundTint="#AFC3BA"
-            app:srcCompat="@drawable/logactivitybtn" />
+            app:srcCompat="@drawable/log_residency_btn_f" />
 
         <ImageButton
             android:id="@+id/view_activities_btn"
