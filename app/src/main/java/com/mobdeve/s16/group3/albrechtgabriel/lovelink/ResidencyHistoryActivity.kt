@@ -3,14 +3,23 @@ package com.mobdeve.s16.group3.albrechtgabriel.lovelink
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mobdeve.s16.group3.albrechtgabriel.lovelink.databinding.ResidencyHistoryPageBinding
+import com.mobdeve.s16.group3.albrechtgabriel.lovelink.model.ResidencyHoursController
+import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class ResidencyHistoryActivity : AppCompatActivity() {
     private lateinit var binding: ResidencyHistoryPageBinding
     private lateinit var residencyAdapter: ResidencyHistoryAdapter
-    private lateinit var residencyList: ArrayList<ResidencyItem>
+
+    // FIX: Initialize this immediately. Do not use 'lateinit'.
+    private var residencyList: ArrayList<ResidencyItem> = ArrayList()
+
     private var callerActivity: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,44 +27,78 @@ class ResidencyHistoryActivity : AppCompatActivity() {
         binding = ResidencyHistoryPageBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Hide navbar menu initially
         binding.navbar.navBarContainerLnr.visibility = View.GONE
-
-        // Get the caller activity name from intent
         callerActivity = intent.getStringExtra("CALLER_ACTIVITY")
 
-        // Initialize sample data
-        loadResidencyData()
-
-        // Setup RecyclerView
         residencyAdapter = ResidencyHistoryAdapter(residencyList)
         binding.residencyHistoryRecyclerview.layoutManager = LinearLayoutManager(this)
         binding.residencyHistoryRecyclerview.adapter = residencyAdapter
 
-        // Show/hide nav bar options
+        loadResidencyData()
+
         binding.navbar.menuIconNavImgbtn.setOnClickListener {
             val menuSection = binding.navbar.navBarContainerLnr
             menuSection.visibility =
-                if (menuSection.visibility == View.VISIBLE) {
-                    View.GONE
-                } else View.VISIBLE
+                if (menuSection.visibility == View.VISIBLE) View.GONE else View.VISIBLE
         }
 
-        // Return button goes back to the caller activity
         binding.returnBtn.setOnClickListener {
             returnToCaller()
         }
     }
 
     private fun loadResidencyData() {
-        // Sample data - replace with actual data from database later
-        residencyList = arrayListOf(
-            ResidencyItem("June 24,\n2025", "09:00:01", "19:03:11", "133\nminutes"),
-            ResidencyItem("June 23,\n2025", "09:00:01", "19:03:11", "133\nminutes"),
-            ResidencyItem("June 22,\n2025", "09:00:01", "19:03:11", "133\nminutes"),
-            ResidencyItem("June 21,\n2025", "09:00:01", "19:03:11", "133\nminutes"),
-            ResidencyItem("June 20,\n2025", "09:00:01", "19:03:11", "133\nminutes")
-        )
+        val userId = getSharedPreferences("prefs", MODE_PRIVATE).getString("user_id", null)
+
+        if (userId != null) {
+            lifecycleScope.launch {
+                try {
+                    // Fetch data
+                    val rawLogs = ResidencyHoursController.getMemberResidency(userId)
+
+                    // Clear the existing list before adding new data
+                    residencyList.clear()
+
+                    val dateFormat = SimpleDateFormat("MMMM d,\nyyyy", Locale.US)
+                    val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.US)
+
+                    for (log in rawLogs) {
+                        val dateStr = dateFormat.format(log.timeIn)
+                        val timeInStr = timeFormat.format(log.timeIn)
+
+                        val timeOutStr = if (log.timeOut.time > 0) {
+                            timeFormat.format(log.timeOut)
+                        } else {
+                            "Ongoing"
+                        }
+
+                        val durationStr = if (log.timeOut.time > 0) {
+                            val diffMillis = log.timeOut.time - log.timeIn.time
+                            val totalMinutes = diffMillis / (1000 * 60)
+                            "$totalMinutes\nminutes"
+                        } else {
+                            "Processing"
+                        }
+
+                        residencyList.add(
+                            ResidencyItem(dateStr, timeInStr, timeOutStr, durationStr)
+                        )
+                    }
+
+                    // Update the UI
+                    residencyAdapter.notifyDataSetChanged()
+
+                    if (residencyList.isEmpty()) {
+                        Toast.makeText(this@ResidencyHistoryActivity, "No history found.", Toast.LENGTH_SHORT).show()
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    Toast.makeText(this@ResidencyHistoryActivity, "Error loading data.", Toast.LENGTH_SHORT).show()
+                }
+            }
+        } else {
+            Toast.makeText(this, "Error: User not logged in.", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun returnToCaller() {
@@ -70,9 +113,7 @@ class ResidencyHistoryActivity : AppCompatActivity() {
                 startActivity(intent)
                 finish()
             }
-            // Add more cases for Log Activity pages when they're ready
             else -> {
-                // Default: go back to home if caller is unknown
                 val intent = Intent(this, HomeActivity::class.java)
                 startActivity(intent)
                 finish()

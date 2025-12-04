@@ -104,6 +104,33 @@ class LogResidencyTimeInActivity : AppCompatActivity() {
                         val committeeText = if (user.committee.isNotEmpty()) user.committee else "No Committee"
                         binding.logResidencyNameLblTv.text = "$fullName ($committeeText)"
                     }
+
+                    // Fetch the last completed residency
+                    val latestResidency = ResidencyHoursController.getLatestMemberResidency(userId)
+
+                    if (latestResidency != null) {
+                        // Create formatter: "June 24, 2025 08:00:01"
+                        val dateFormatter = SimpleDateFormat("MMMM d, yyyy HH:mm:ss", Locale.US)
+
+                        // Set Time In & Out
+                        binding.timeInLblTv.text = "Time In: ${dateFormatter.format(latestResidency.timeIn)}"
+                        binding.timeOutLblTv.text = "Time Out: ${dateFormatter.format(latestResidency.timeOut)}"
+
+                        // Calculate Total Duration
+                        val diffMillis = latestResidency.timeOut.time - latestResidency.timeIn.time
+                        val totalSeconds = diffMillis / 1000
+
+                        val hours = totalSeconds / 3600
+                        val minutes = (totalSeconds % 3600) / 60
+                        val seconds = totalSeconds % 60
+
+                        binding.totalHoursLblTv.text = "Total Hours: ${hours}h ${minutes}m ${seconds}s"
+                    } else {
+                        binding.timeInLblTv.text = "Time In: --"
+                        binding.timeOutLblTv.text = "Time Out: --"
+                        binding.totalHoursLblTv.text = "Total Hours: --"
+                    }
+
                 } catch (e: Exception) {
                     binding.logResidencyNameLblTv.text = "Error loading user info"
                     e.printStackTrace()

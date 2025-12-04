@@ -71,14 +71,20 @@ object ResidencyHoursController {
     // Get all completed residencies of a member
     suspend fun getMemberResidency(memberId: String): List<ResidencyHours> {
         return try {
+            // 1. Fetch ALL logs for this user (Removed .whereNotEqualTo to avoid index error)
             val snapshot = residencyCollection
                 .whereEqualTo(ResidencyHoursConstants.MEMBER_ID_FIELD, memberId)
-                .whereNotEqualTo(ResidencyHoursConstants.TIME_OUT_FIELD, Date(0))
                 .get()
                 .await()
 
+            // 2. Map to objects and Filter in Kotlin
             snapshot.documents.mapNotNull { it.toObject(ResidencyHours::class.java) }
-                .sortedByDescending { it.timeIn }
+                .filter {
+                    // Only keep records where timeOut is NOT the placeholder (0)
+                    it.timeOut != null && it.timeOut.time > 0L
+                }
+                .sortedByDescending { it.timeIn } // Sort latest first
+
         } catch (e: Exception) {
             e.printStackTrace()
             emptyList()
@@ -88,7 +94,27 @@ object ResidencyHoursController {
     // Get latest residency
     suspend fun getLatestMemberResidency(memberId: String): ResidencyHours? {
         return try {
-            getMemberResidency(memberId).firstOrNull()
+            // 1. Get ALL records for this user
+            val snapshot = residencyCollection
+                .whereEqualTo(ResidencyHoursConstants.MEMBER_ID_FIELD, memberId)
+                .get()
+                .await()
+
+            // 2. Map to objects
+            val allLogs = snapshot.documents.mapNotNull { doc ->
+                doc.toObject(ResidencyHours::class.java)
+            }
+
+            // 3. Filter in Kotlin:
+            val latestCompleted = allLogs
+                .sortedByDescending { it.timeIn } // Ensure latest is first
+                .firstOrNull {
+                    // Check if timeOut exists and is not the "ongoing" placeholder (0)
+                    it.timeOut != null && it.timeOut.time > 0L
+                }
+
+            latestCompleted
+
         } catch (e: Exception) {
             e.printStackTrace()
             null
