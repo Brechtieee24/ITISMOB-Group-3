@@ -112,6 +112,10 @@ object UserController {
         }
     }
 
+//    suspend fun filterByCommitteeAndHour(committeeName: String, minHours: Int? = null, maxHours: Int? = null) : List<User> {
+//
+//    }
+
     // Update formatted residency for all members of a committee
     suspend fun updateFormattedResidency(committee: String) {
         try {
