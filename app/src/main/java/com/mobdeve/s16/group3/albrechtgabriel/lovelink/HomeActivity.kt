@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
+import com.mobdeve.s16.group3.albrechtgabriel.lovelink.UserPreferences
 import com.mobdeve.s16.group3.albrechtgabriel.lovelink.databinding.HomePageBinding
 import com.mobdeve.s16.group3.albrechtgabriel.lovelink.model.ResidencyHoursController
 import androidx.lifecycle.lifecycleScope
@@ -13,12 +14,28 @@ import kotlinx.coroutines.launch
 
 class HomeActivity : AppCompatActivity() {
     private lateinit var binding: HomePageBinding
+    private var isOfficer: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = HomePageBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val isOfficer = intent.getBooleanExtra("IS_OFFICER", false)
+
+        // NEW: Get isOfficer from Intent OR SharedPreferences (fallback)
+        isOfficer = intent.getBooleanExtra("IS_OFFICER", false)
+        if (!isOfficer) {
+            // If not passed via intent, try SharedPreferences
+            isOfficer = UserPreferences.isOfficer(this)
+        }
+
+        // Show correct button based on role
+        if (isOfficer) {
+            binding.logActivityHomeBtn.visibility = View.VISIBLE
+            binding.activityHistoryHomeBtn.visibility = View.GONE
+        } else {
+            binding.logActivityHomeBtn.visibility = View.GONE
+            binding.activityHistoryHomeBtn.visibility = View.VISIBLE
+        }
 
         binding.navbar.navBarContainerLnr.visibility = View.GONE
 
@@ -56,6 +73,13 @@ class HomeActivity : AppCompatActivity() {
             }
         }
 
+        // Navigate to Activity History
+        binding.activityHistoryHomeBtn.setOnClickListener {
+            val intent = Intent(this, ActivityHistoryActivity::class.java)
+            intent.putExtra("CALLER_ACTIVITY", "HomeActivity")
+            startActivity(intent)
+        }
+
         // TODO for Josh: Navigate to Log Activity page
         binding.logActivityHomeBtn.setOnClickListener {
             // TODO: Add LogActivityActivity when implemented
@@ -78,7 +102,10 @@ class HomeActivity : AppCompatActivity() {
 
         // Signs out the user
         binding.returnBtn.setOnClickListener {
-            // 1. Sign out the current Firebase user
+            // Clear SharedPreferences
+            UserPreferences.clearAll(this)
+
+            // Sign out from Firebase
             FirebaseAuth.getInstance().signOut()
 
             // 2. Clear SharedPreferences (Destroy local user data)

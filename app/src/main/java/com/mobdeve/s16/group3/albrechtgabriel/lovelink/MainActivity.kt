@@ -15,6 +15,7 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.mobdeve.s16.group3.albrechtgabriel.lovelink.controller.UserController
 import com.mobdeve.s16.group3.albrechtgabriel.lovelink.databinding.LandingPageBinding
 import com.jakewharton.threetenabp.AndroidThreeTen
+import com.mobdeve.s16.group3.albrechtgabriel.lovelink.UserPreferences
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -36,7 +37,7 @@ class MainActivity : AppCompatActivity() {
 
         // Configure Google Sign In
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id)) // from Firebase console
+            .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
 
@@ -75,25 +76,42 @@ class MainActivity : AppCompatActivity() {
                     val userEmail = firebaseAuth.currentUser?.email
                     lifecycleScope.launch {
                         if (userEmail != null) {
-                            // Check if user exists in your database
                             val user = UserController.getUserByEmail(userEmail)
                             if (user != null) {
+                                // Save to old prefs (for compatibility with existing code)
                                 val sharedPreferences = getSharedPreferences("prefs", Context.MODE_PRIVATE)
                                 with(sharedPreferences.edit()) {
-                                    // This relies on user.id being populated with the Document ID (See Step 2)
-                                    putString("user_id", user.id)
+                                    putString("user_id", userEmail) // Use email as ID
                                     apply()
                                 }
 
-                                // User exists → go to HomeActivity'
+                                // NEW: Save to UserPreferences
+                                UserPreferences.setOfficerStatus(this@MainActivity, user.isOfficer)
+                                UserPreferences.setUserEmail(this@MainActivity, user.email)
+
+                                // Navigate to HomeActivity
                                 val intent = Intent(this@MainActivity, HomeActivity::class.java)
                                 intent.putExtra("IS_OFFICER", user.isOfficer)
-                                Toast.makeText(this@MainActivity, "Successfully Logged In: " + user.email, Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    this@MainActivity,
+                                    "Successfully Logged In: ${user.email}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                                 startActivity(intent)
                                 finish()
+                            } else {
+                                Toast.makeText(
+                                    this@MainActivity,
+                                    "User not found in database",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         } else {
-                            Toast.makeText(this@MainActivity, "Failed to get email.", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                this@MainActivity,
+                                "Failed to get email.",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
                 } else {
