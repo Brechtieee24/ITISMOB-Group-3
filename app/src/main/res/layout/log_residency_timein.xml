@@ -6,9 +6,6 @@
     android:layout_height="match_parent"
     android:background="#B0C4BB">
 
-
-    <include layout="@layout/page_header" />
-
     <LinearLayout
         android:id="@+id/log_residency_container_lnr"
         android:layout_width="match_parent"
@@ -130,4 +127,11 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/returnbtn" />
+
+    <include
+        android:id="@+id/navbar"
+        layout="@layout/page_header"
+        tools:layout_editor_absoluteX="125dp"
+        tools:layout_editor_absoluteY="1dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
