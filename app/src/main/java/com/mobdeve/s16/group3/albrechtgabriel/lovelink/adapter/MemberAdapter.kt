@@ -41,6 +41,8 @@ class MemberAdapter(private var memberList: MutableList<User>, private val isOff
             val context = holder.itemView.context
             val intent = Intent(context, ViewOtherProfileActivity::class.java)
             intent.putExtra("MEMBER_EMAIL", user.email)
+            intent.putExtra("IS_OFFICER", isOfficer)
+            context.startActivity(intent)
             context.startActivity(intent)
         }
 

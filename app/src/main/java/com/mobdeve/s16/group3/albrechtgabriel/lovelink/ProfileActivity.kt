@@ -26,6 +26,8 @@ class ProfileActivity : AppCompatActivity() {
     private var monthlyResidencyList: ArrayList<MonthlyResidency> = arrayListOf()
     private var originalBioText: String = ""
     private var selectedImageUri: Uri? = null
+    private var isOfficer: Boolean = false
+
 
     // Photo picker launcher
     private val pickImageLauncher = registerForActivityResult(
@@ -43,8 +45,11 @@ class ProfileActivity : AppCompatActivity() {
         binding = ProfilePageBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        isOfficer = UserPreferences.isOfficer(this)
+        NavbarManager.setupNavBar(this, isOfficer)
+
         // Hide navbar menu initially
-        binding.navbar.navBarContainerLnr.visibility = View.GONE
+//        binding.navbar.navBarContainerLnr.visibility = View.GONE
 
         // Initialize adapters with empty lists
         monthlyResidencyAdapter = MonthlyResidencyAdapter(monthlyResidencyList)
@@ -59,10 +64,10 @@ class ProfileActivity : AppCompatActivity() {
         loadProfileData()
 
         // Navbar toggle
-        binding.navbar.menuIconNavImgbtn.setOnClickListener {
-            binding.navbar.navBarContainerLnr.visibility =
-                if (binding.navbar.navBarContainerLnr.visibility == View.VISIBLE) View.GONE else View.VISIBLE
-        }
+//        binding.navbar.menuIconNavImgbtn.setOnClickListener {
+//            binding.navbar.navBarContainerLnr.visibility =
+//                if (binding.navbar.navBarContainerLnr.visibility == View.VISIBLE) View.GONE else View.VISIBLE
+//        }
 
         // Profile picture click
         binding.profilePictureIv.setOnClickListener { changeProfilePhoto() }

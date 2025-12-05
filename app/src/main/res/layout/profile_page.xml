@@ -6,10 +6,6 @@
     android:layout_height="match_parent"
     android:background="#B0C4BB">
 
-    <include
-        android:id="@+id/navbar"
-        layout="@layout/page_header" />
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -197,5 +193,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/returnbtn" />
+
+    <include
+        android:id="@+id/navbar"
+        layout="@layout/page_header" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
