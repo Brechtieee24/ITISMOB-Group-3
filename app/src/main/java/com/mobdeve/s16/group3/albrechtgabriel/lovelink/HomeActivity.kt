@@ -37,7 +37,9 @@ class HomeActivity : AppCompatActivity() {
 
     // CameraX Variables
     private lateinit var cameraExecutor: ExecutorService
-    private var isScanning = false // Flag to prevent multiple detections
+
+    // Tracks unique IDs scanned in the current open session
+    private val scannedSessionIds = mutableSetOf<String>()
 
     // Permission Launcher
     private val requestCameraPermissionLauncher = registerForActivityResult(
@@ -105,10 +107,7 @@ class HomeActivity : AppCompatActivity() {
 
     private fun logActivityDialogFlow() {
         val logActivityContainer = binding.dialogLogActivityContainer
-        val qrFrameContainer = binding.dialogQrFrameContainer // The container covering the screen
-
-        // Note: Make sure you added <PreviewView id="@+id/cameraPreview"> to your included XML
-        val previewView = binding.qrFrameDialog.cameraPreview
+        val qrFrameContainer = binding.dialogQrFrameContainer
 
         // Open Menu
         binding.logActivityHomeBtn.setOnClickListener {
@@ -128,6 +127,10 @@ class HomeActivity : AppCompatActivity() {
             logActivityContainer.visibility = View.GONE
             qrFrameContainer.visibility = View.VISIBLE
 
+            // 1. Reset the list and the counter when opening the scanner
+            scannedSessionIds.clear()
+            binding.qrFrameDialog.scannedParticipantsLabel.text = "Scanned Participants: 0"
+
             checkPermissionAndStartCamera()
         }
 
@@ -137,10 +140,11 @@ class HomeActivity : AppCompatActivity() {
             stopCamera() // Stop processing to save battery
         }
 
-        // Confirm Button (Manual override if needed)
+        // --- CONFIRM BUTTON ---
         binding.qrFrameDialog.confirmbtn.setOnClickListener {
             qrFrameContainer.visibility = View.GONE
             stopCamera()
+            Toast.makeText(this, "Session finished. Total: ${scannedSessionIds.size}", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -173,14 +177,19 @@ class HomeActivity : AppCompatActivity() {
                 .also {
                     it.setAnalyzer(cameraExecutor, QrCodeAnalyzer { qrCodeValue ->
                         // CALLBACK WHEN QR FOUND
-                        if (!isScanning) {
-                            isScanning = true // Prevent duplicate triggers
-                            runOnUiThread {
-                                stopCamera() // Freeze camera
-                                binding.dialogQrFrameContainer.visibility = View.GONE
-                                Toast.makeText(this, "Scanned: $qrCodeValue", Toast.LENGTH_SHORT).show()
+                        runOnUiThread {
+                            if (!scannedSessionIds.contains(qrCodeValue)) {
 
-                                // Save to DB
+                                // 1. Add to set so we don't scan them again immediately
+                                scannedSessionIds.add(qrCodeValue)
+
+                                // 2. Update the UI Counter
+                                binding.qrFrameDialog.scannedParticipantsLabel.text = "Scanned Participants: ${scannedSessionIds.size}"
+
+                                // 3. Feedback
+                                Toast.makeText(this, "ID Scanned!", Toast.LENGTH_SHORT).show()
+
+                                // 4. Save to DB
                                 saveActivityParticipation(qrCodeValue)
                             }
                         }
@@ -196,7 +205,6 @@ class HomeActivity : AppCompatActivity() {
                 cameraProvider.bindToLifecycle(
                     this, cameraSelector, preview, imageAnalyzer
                 )
-                isScanning = false // Reset flag when camera starts
             } catch (exc: Exception) {
                 Log.e("CAMERA", "Use case binding failed", exc)
             }
@@ -212,7 +220,7 @@ class HomeActivity : AppCompatActivity() {
         }, ContextCompat.getMainExecutor(this))
     }
 
-    // --- QR ANALYZER CLASS (Inner Class or Separate File) ---
+    // --- QR ANALYZER CLASS ---
     private class QrCodeAnalyzer(private val onQrFound: (String) -> Unit) : ImageAnalysis.Analyzer {
 
         @OptIn(ExperimentalGetImage::class)
@@ -227,7 +235,6 @@ class HomeActivity : AppCompatActivity() {
                         for (barcode in barcodes) {
                             barcode.rawValue?.let { value ->
                                 onQrFound(value) // Trigger callback
-                                // Don't close imageProxy here, we want to stop analyzing
                             }
                         }
                     }
@@ -258,12 +265,12 @@ class HomeActivity : AppCompatActivity() {
                 if (eventId != null) {
                     val result = ActivityParticipationController.addEventParticipation(memberId, eventId)
                     if (result != null) {
-                        Toast.makeText(this@HomeActivity, "Activity Logged!", Toast.LENGTH_LONG).show()
+                        Log.d("SCAN", "Saved $memberId")
                     } else {
-                        Toast.makeText(this@HomeActivity, "Failed to save.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@HomeActivity, "Failed to save to database.", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    Toast.makeText(this@HomeActivity, "No Events found.", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@HomeActivity, "No Events found to link.", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
