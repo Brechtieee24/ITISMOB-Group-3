@@ -210,8 +210,9 @@ class ProfileActivity : AppCompatActivity() {
         // Save to Firestore using coroutine
         lifecycleScope.launch {
             try {
+                val email = UserController.getUserById(userId)?.email ?: ""
                 // Using the updated Controller function that takes docId
-                val updatedUser = UserController.updateAboutInfo(userId, newBioText)
+                val updatedUser = UserController.updateAboutInfo(email, newBioText)
 
                 if (updatedUser != null) {
                     binding.profileBioTv.text = newBioText
