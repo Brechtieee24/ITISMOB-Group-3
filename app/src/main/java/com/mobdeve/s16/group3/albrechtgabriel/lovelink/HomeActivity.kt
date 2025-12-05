@@ -28,6 +28,8 @@ class HomeActivity : AppCompatActivity() {
             isOfficer = UserPreferences.isOfficer(this)
         }
 
+        NavbarManager.setupNavBar(this, isOfficer)
+
         logActivityDialogFlow()
 
         // Show correct button based on role
@@ -121,13 +123,13 @@ class HomeActivity : AppCompatActivity() {
         }
 
         // Show/hide nav bar options
-        binding.navbar.menuIconNavImgbtn.setOnClickListener {
-            val menuSection = binding.navbar.navBarContainerLnr
-            menuSection.visibility =
-                if (menuSection.visibility == View.VISIBLE) {
-                    View.GONE
-                } else View.VISIBLE
-        }
+//        binding.navbar.menuIconNavImgbtn.setOnClickListener {
+//            val menuSection = binding.navbar.navBarContainerLnr
+//            menuSection.visibility =
+//                if (menuSection.visibility == View.VISIBLE) {
+//                    View.GONE
+//                } else View.VISIBLE
+//        }
     }
 
     // TODO: Saving logic for both dialogs (Log Activity & QR Frame)

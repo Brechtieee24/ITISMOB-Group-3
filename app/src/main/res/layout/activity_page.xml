@@ -96,6 +96,13 @@
         </LinearLayout>
     </ScrollView>
 
+    <include
+        android:id="@+id/navbar"
+        layout="@layout/page_header"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <FrameLayout
         android:id="@+id/dialogAddDescContainer"
         android:layout_width="match_parent"
@@ -117,12 +124,5 @@
             android:layout_margin="32dp" />
 
     </FrameLayout>
-
-    <include
-        android:id="@+id/navbar"
-        layout="@layout/page_header"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

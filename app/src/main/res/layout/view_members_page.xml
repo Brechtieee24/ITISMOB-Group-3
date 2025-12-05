@@ -103,17 +103,6 @@
         app:layout_constraintTop_toBottomOf="@+id/linearLayout"
         app:srcCompat="@drawable/returnbtn_view_members_page" />
 
-    <!-- Temporary test button to view others' profile - remove when Member RecyclerView is implemented -->
-    <Button
-        android:id="@+id/test_view_profile_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Test View Profile"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <include
         android:id="@+id/navbar"
         layout="@layout/page_header"
