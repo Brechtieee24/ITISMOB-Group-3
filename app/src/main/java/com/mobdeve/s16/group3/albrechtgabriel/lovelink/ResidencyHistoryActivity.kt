@@ -21,13 +21,18 @@ class ResidencyHistoryActivity : AppCompatActivity() {
     private var residencyList: ArrayList<ResidencyItem> = ArrayList()
 
     private var callerActivity: String? = null
+    private var isOfficer: Boolean = false
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ResidencyHistoryPageBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.navbar.navBarContainerLnr.visibility = View.GONE
+        isOfficer = UserPreferences.isOfficer(this)
+        NavbarManager.setupNavBar(this, isOfficer)
+
+//        binding.navbar.navBarContainerLnr.visibility = View.GONE
         callerActivity = intent.getStringExtra("CALLER_ACTIVITY")
 
         // 1. SETUP ADAPTER FIRST (It uses the empty list we initialized above)
@@ -38,11 +43,11 @@ class ResidencyHistoryActivity : AppCompatActivity() {
         // 2. FETCH DATA SECOND (This will fill the list and update the adapter)
         loadResidencyData()
 
-        binding.navbar.menuIconNavImgbtn.setOnClickListener {
-            val menuSection = binding.navbar.navBarContainerLnr
-            menuSection.visibility =
-                if (menuSection.visibility == View.VISIBLE) View.GONE else View.VISIBLE
-        }
+//        binding.navbar.menuIconNavImgbtn.setOnClickListener {
+//            val menuSection = binding.navbar.navBarContainerLnr
+//            menuSection.visibility =
+//                if (menuSection.visibility == View.VISIBLE) View.GONE else View.VISIBLE
+//        }
 
         binding.returnBtn.setOnClickListener {
             returnToCaller()

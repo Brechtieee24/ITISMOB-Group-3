@@ -197,12 +197,14 @@ class LogResidencyTimeInActivity : AppCompatActivity() {
         binding.residencyHistoryBtn.setOnClickListener {
             val intent = Intent(this, ResidencyHistoryActivity::class.java)
             intent.putExtra("CALLER_ACTIVITY", "LogResidencyTimeInActivity")
+            intent.putExtra("IS_OFFICER", isOfficer)
             startActivity(intent)
         }
 
         binding.activityHistoryBtn.setOnClickListener {
             val intent = Intent(this, ActivityHistoryActivity::class.java)
             intent.putExtra("CALLER_ACTIVITY", "LogResidencyTimeInActivity")
+            intent.putExtra("IS_OFFICER", isOfficer)
             startActivity(intent)
         }
 
