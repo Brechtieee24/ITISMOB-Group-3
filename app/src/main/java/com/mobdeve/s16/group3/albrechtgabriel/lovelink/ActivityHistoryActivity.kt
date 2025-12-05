@@ -19,11 +19,16 @@ class ActivityHistoryActivity : AppCompatActivity() {
     private var activityList: ArrayList<ActivityItem> = ArrayList()
 
     private var callerActivity: String? = null
+    private var isOfficer: Boolean = false
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHistoryPageBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        isOfficer = UserPreferences.isOfficer(this)
+        NavbarManager.setupNavBar(this, isOfficer)
 
         // Hide navbar menu initially
         binding.navbar.navBarContainerLnr.visibility = View.GONE

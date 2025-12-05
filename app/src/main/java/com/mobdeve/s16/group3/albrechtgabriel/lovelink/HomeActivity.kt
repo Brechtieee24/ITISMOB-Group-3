@@ -334,6 +334,7 @@ class HomeActivity : AppCompatActivity() {
 
                 val intent = Intent(this@HomeActivity, targetActivity)
                 if (ongoing != null) intent.putExtra("RESIDENCY_ID", ongoing.id)
+                intent.putExtra("IS_OFFICER", isOfficer)
                 startActivity(intent)
             }
         } else {

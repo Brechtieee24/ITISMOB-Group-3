@@ -24,11 +24,16 @@ import java.util.Locale
 class LogResidencyTimeOutActivity : AppCompatActivity() {
     private lateinit var binding: LogResidencyTimeoutBinding
     private var currentResidencyId: String? = null
+    private var isOfficer: Boolean = false
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = LogResidencyTimeoutBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        isOfficer = UserPreferences.isOfficer(this)
+        NavbarManager.setupNavBar(this, isOfficer)
 
         val userId = getSharedPreferences("prefs", MODE_PRIVATE).getString("user_id", null)
         currentResidencyId = intent.getStringExtra("RESIDENCY_ID")

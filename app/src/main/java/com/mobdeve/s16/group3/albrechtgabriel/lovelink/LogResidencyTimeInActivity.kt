@@ -39,6 +39,7 @@ class LogResidencyTimeInActivity : AppCompatActivity() {
     private lateinit var binding: LogResidencyTimeinBinding
     private lateinit var geofenceManager: GeofenceManager
     private var isInsideGeofence = false
+    private var isOfficer: Boolean = false
 
     // Define coordinates here so both Geofence and Manual Check use the same data
     // QUIRINO LOCATION
@@ -74,6 +75,7 @@ class LogResidencyTimeInActivity : AppCompatActivity() {
         }
     }
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val prefs = getSharedPreferences("prefs", MODE_PRIVATE)
@@ -81,6 +83,9 @@ class LogResidencyTimeInActivity : AppCompatActivity() {
 
         binding = LogResidencyTimeinBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        isOfficer = UserPreferences.isOfficer(this)
+        NavbarManager.setupNavBar(this, isOfficer)
 
         // --- GEOFENCE SETUP ---
         geofenceManager = GeofenceManager(this)
@@ -192,12 +197,14 @@ class LogResidencyTimeInActivity : AppCompatActivity() {
         binding.residencyHistoryBtn.setOnClickListener {
             val intent = Intent(this, ResidencyHistoryActivity::class.java)
             intent.putExtra("CALLER_ACTIVITY", "LogResidencyTimeInActivity")
+            intent.putExtra("IS_OFFICER", isOfficer)
             startActivity(intent)
         }
 
         binding.activityHistoryBtn.setOnClickListener {
             val intent = Intent(this, ActivityHistoryActivity::class.java)
             intent.putExtra("CALLER_ACTIVITY", "LogResidencyTimeInActivity")
+            intent.putExtra("IS_OFFICER", isOfficer)
             startActivity(intent)
         }
 
