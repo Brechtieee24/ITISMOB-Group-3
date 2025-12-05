@@ -9,17 +9,20 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.firebase.auth.FirebaseAuth
 import com.mobdeve.s16.group3.albrechtgabriel.lovelink.controller.UserController
 import com.mobdeve.s16.group3.albrechtgabriel.lovelink.databinding.ProfilePageBinding
+import com.mobdeve.s16.group3.albrechtgabriel.lovelink.model.ActivityParticipationController
+import com.mobdeve.s16.group3.albrechtgabriel.lovelink.model.ResidencyHoursController
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.Calendar
 
 class ProfileActivity : AppCompatActivity() {
 
     private lateinit var binding: ProfilePageBinding
     private lateinit var activityAdapter: ProfileActivityAdapter
     private lateinit var monthlyResidencyAdapter: MonthlyResidencyAdapter
-
     private var activityList: ArrayList<String> = arrayListOf()
     private var monthlyResidencyList: ArrayList<MonthlyResidency> = arrayListOf()
     private var originalBioText: String = ""
@@ -32,6 +35,7 @@ class ProfileActivity : AppCompatActivity() {
         uri?.let {
             selectedImageUri = it
             binding.profilePictureIv.setImageURI(it)
+            // FOR FUTURE RELEASE
             Toast.makeText(this, "Photo updated! Remember to save changes.", Toast.LENGTH_SHORT).show()
         }
     }
@@ -44,7 +48,7 @@ class ProfileActivity : AppCompatActivity() {
         // Hide navbar menu initially
         binding.navbar.navBarContainerLnr.visibility = View.GONE
 
-        // Initialize adapters with empty lists first
+        // Initialize adapters
         monthlyResidencyAdapter = MonthlyResidencyAdapter(monthlyResidencyList)
         binding.monthlyResidencyRecyclerview.layoutManager = LinearLayoutManager(this)
         binding.monthlyResidencyRecyclerview.adapter = monthlyResidencyAdapter
@@ -77,17 +81,11 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun loadProfileData() {
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        if (currentUser == null) {
-            Toast.makeText(this, "User not signed in", Toast.LENGTH_SHORT).show()
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
-            return
-        }
+        // 1. Get User ID from SharedPreferences
+        val userId = getSharedPreferences("prefs", MODE_PRIVATE).getString("user_id", null)
 
-        val userEmail = currentUser.email
-        if (userEmail.isNullOrEmpty()) {
-            Toast.makeText(this, "User email not available", Toast.LENGTH_SHORT).show()
+        if (userId == null) {
+            Toast.makeText(this, "User ID not found. Please log in again.", Toast.LENGTH_SHORT).show()
             startActivity(Intent(this, MainActivity::class.java))
             finish()
             return
@@ -95,39 +93,31 @@ class ProfileActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                val user = UserController.getUserByEmail(userEmail)
+                // --- A. Fetch User Info ---
+                val user = UserController.getUserById(userId)
+
                 if (user != null) {
-                    // Populate profile info safely
                     binding.profileNameTv.text = getString(
                         R.string.profile_name_template,
-                        user.firstName ?: "",
-                        user.lastName ?: "",
-                        user.committee ?: ""
+                        user.firstName,
+                        user.lastName,
+                        if(user.committee.isNotEmpty()) user.committee else "No Committee"
                     )
-                    binding.profileBioTv.text = user.aboutInfo ?: ""
-                    binding.profileBioEt.setText(user.aboutInfo ?: "")
 
-                    originalBioText = binding.profileBioTv.text.toString()
+                    val bio = if(user.aboutInfo.isNotEmpty()) user.aboutInfo else "No bio yet."
+                    binding.profileBioTv.text = bio
+                    binding.profileBioEt.setText(bio)
 
-                    // Populate residency list (sample data, replace with DB later)
-                    monthlyResidencyList.clear()
-                    monthlyResidencyList.addAll(calculateMonthlyResidency())
-                    monthlyResidencyAdapter.notifyDataSetChanged()
+                    originalBioText = bio
 
-                    // Populate activity list (sample data)
-                    // Change this to sample data
-                    activityList.clear()
-                    activityList.addAll(
-                        arrayListOf(
-                            "Event Activity # 4 (9/12/25)",
-                            "Event Activity # 3 (9/11/25)",
-                            "Event Activity # 2 (9/10/25)",
-                            "Event Activity # 1 (9/9/25)"
-                        )
-                    )
-                    activityAdapter.notifyDataSetChanged()
+                    // --- B. Fetch Residency Data (Dynamic Calculation) ---
+                    loadResidencyData(userId)
+
+                    // --- C. Fetch Activity Data ---
+                    loadActivityData(userId)
+
                 } else {
-                    Toast.makeText(this@ProfileActivity, "User data not found", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@ProfileActivity, "User data not found in DB.", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -136,12 +126,57 @@ class ProfileActivity : AppCompatActivity() {
         }
     }
 
-    private fun calculateMonthlyResidency(): ArrayList<MonthlyResidency> {
-        return arrayListOf(
-            MonthlyResidency("Oct", 490),
-            MonthlyResidency("Sep", 490),
-            MonthlyResidency("Aug", 490)
-        )
+    private suspend fun loadResidencyData(userId: String) {
+        // Fetch raw logs
+        val logs = ResidencyHoursController.getMemberResidency(userId)
+
+        // Clear list
+        monthlyResidencyList.clear()
+
+        if (logs.isNotEmpty()) {
+            // Map to store month -> totalMinutes
+            val monthlyTotals = mutableMapOf<String, Int>()
+            val monthFormatter = SimpleDateFormat("MMM", Locale.US) // "Jan", "Feb"
+
+            for (log in logs) {
+                // Only process completed logs
+                if (log.timeOut.time > 0) {
+                    val monthName = monthFormatter.format(log.timeIn)
+
+                    val diffMillis = log.timeOut.time - log.timeIn.time
+                    val minutes = (diffMillis / (1000 * 60)).toInt()
+
+                    val currentTotal = monthlyTotals.getOrDefault(monthName, 0)
+                    monthlyTotals[monthName] = currentTotal + minutes
+                }
+            }
+
+            // Convert Map to List and Add to Adapter
+            monthlyTotals.forEach { (month, minutes) ->
+                monthlyResidencyList.add(MonthlyResidency(month, minutes))
+            }
+        } else {
+            // Optional: Add empty state placeholders if needed
+            monthlyResidencyList.add(MonthlyResidency("No Data", 0))
+        }
+
+        monthlyResidencyAdapter.notifyDataSetChanged()
+    }
+
+    private suspend fun loadActivityData(userId: String) {
+        val events = ActivityParticipationController.getEventsOfUser(userId)
+
+        activityList.clear()
+
+        for (event in events) {
+            activityList.add("${event.eventName} (${event.date})")
+        }
+
+        if (activityList.isEmpty()) {
+            activityList.add("No activities yet.")
+        }
+
+        activityAdapter.notifyDataSetChanged()
     }
 
     private fun enterEditMode() {
@@ -165,23 +200,24 @@ class ProfileActivity : AppCompatActivity() {
             return
         }
 
-        binding.profileBioTv.text = newBioText
+        val userId = getSharedPreferences("prefs", MODE_PRIVATE).getString("user_id", null)
 
-        // Get current user email safely
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        val userEmail = currentUser?.email
-        if (userEmail == null) {
-            Toast.makeText(this, "User not signed in", Toast.LENGTH_SHORT).show()
+        if (userId == null) {
+            Toast.makeText(this, "Session expired.", Toast.LENGTH_SHORT).show()
             return
         }
 
         // Save to Firestore using coroutine
         lifecycleScope.launch {
             try {
-                val updatedUser = UserController.updateAboutInfo(userEmail, newBioText)
+                // Using the updated Controller function that takes docId
+                val updatedUser = UserController.updateAboutInfo(userId, newBioText)
+
                 if (updatedUser != null) {
-                    Toast.makeText(this@ProfileActivity, "Profile saved successfully", Toast.LENGTH_SHORT).show()
+                    binding.profileBioTv.text = newBioText
                     originalBioText = newBioText
+                    Toast.makeText(this@ProfileActivity, "Profile saved successfully", Toast.LENGTH_SHORT).show()
+                    exitEditMode() // Only exit if save was successful
                 } else {
                     Toast.makeText(this@ProfileActivity, "Failed to update profile", Toast.LENGTH_SHORT).show()
                 }
@@ -190,9 +226,6 @@ class ProfileActivity : AppCompatActivity() {
                 Toast.makeText(this@ProfileActivity, "Error updating profile", Toast.LENGTH_SHORT).show()
             }
         }
-
-        exitEditMode()
-        Toast.makeText(this, "Profile saved successfully", Toast.LENGTH_SHORT).show()
     }
 
     private fun cancelChanges() {

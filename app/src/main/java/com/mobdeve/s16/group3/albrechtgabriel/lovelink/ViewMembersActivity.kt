@@ -18,7 +18,7 @@ class ViewMembersActivity : AppCompatActivity() {
         binding = ViewMembersPageBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // ✅ NEW: Get isOfficer from Intent OR SharedPreferences (fallback)
+        //  NEW: Get isOfficer from Intent OR SharedPreferences (fallback)
         isOfficer = intent.getBooleanExtra("IS_OFFICER", false)
         if (!isOfficer) {
             // If not passed via intent, try SharedPreferences
