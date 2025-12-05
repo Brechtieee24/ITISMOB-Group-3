@@ -8,6 +8,7 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.location.Location
 import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
@@ -17,6 +18,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.Geofence
+import com.google.android.gms.location.LocationServices
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.qrcode.QRCodeWriter
@@ -38,14 +40,23 @@ class LogResidencyTimeInActivity : AppCompatActivity() {
     private lateinit var geofenceManager: GeofenceManager
     private var isInsideGeofence = false
 
-    // BroadcastReceiver to get geofence enter/exit updates
+    // Define coordinates here so both Geofence and Manual Check use the same data
+    // QUIRINO LOCATION
+    private val TARGET_LAT = 14.571426282440354
+    private val TARGET_LNG = 120.99130425300307
+    private val TARGET_RADIUS = 200f
+
+    // BRO CONNON HALL
+    //private val TARGET_LAT = 14.563927754309345
+    //private val TARGET_LNG = 120.99333652577326
+    private val GEOLOCATION = "Quirino"
+    // ---------------------
+
+    // BroadcastReceiver to get geofence enter/exit updates (Passive Check)
     private val geofenceStatusReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             val inside = intent?.getBooleanExtra("inside", false) ?: false
             isInsideGeofence = inside
-            val status = if (inside) "INSIDE" else "OUTSIDE"
-            // Optional: Show toast only when status changes
-            // Toast.makeText(context, "You are $status the residency area.", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -59,8 +70,7 @@ class LogResidencyTimeInActivity : AppCompatActivity() {
 
         if (fineLocation && backgroundLocation) {
             setupGeofence()
-        } else {
-            Toast.makeText(this, "Location permissions are required for geofencing", Toast.LENGTH_LONG).show()
+            checkCurrentLocation()
         }
     }
 
@@ -76,7 +86,7 @@ class LogResidencyTimeInActivity : AppCompatActivity() {
         geofenceManager = GeofenceManager(this)
         checkPermissionsAndStartGeofence()
 
-        // Register Receiver (Fixed for Android 14+)
+        // Register Receiver
         ContextCompat.registerReceiver(
             this,
             geofenceStatusReceiver,
@@ -87,9 +97,12 @@ class LogResidencyTimeInActivity : AppCompatActivity() {
         // --- START CLOCK ---
         startRealTimeClock()
 
-        // --- LOAD USER DATA & LATEST RESIDENCY ---
+        // --- LOCATION TRACKING ---
+        setupGeofence()
+        checkCurrentLocation()
+
+        // --- LOAD USER DATA ---
         if (userId != null) {
-            // 1. Generate QR Code
             val qrBitmap = generateQrCode(userId)
             if (qrBitmap != null) {
                 binding.logResidencyQrHolderIv.setImageBitmap(qrBitmap)
@@ -97,9 +110,8 @@ class LogResidencyTimeInActivity : AppCompatActivity() {
 
             lifecycleScope.launch {
                 try {
-                    // 2. Fetch User Details (Name/Committee)
                     val userSnapshot = FirebaseFirestore.getInstance()
-                        .collection("User") // Make sure collection name matches exactly (case sensitive)
+                        .collection("User") // Verify exact collection name in Firebase
                         .document(userId)
                         .get()
                         .await()
@@ -111,28 +123,22 @@ class LogResidencyTimeInActivity : AppCompatActivity() {
                         binding.logResidencyNameLblTv.text = "$fullName ($committeeText)"
                     }
 
-                    // 3. Fetch Latest Completed Residency
+                    // Fetch Latest Residency
                     val latestResidency = ResidencyHoursController.getLatestMemberResidency(userId)
 
                     if (latestResidency != null) {
-                        // Create formatter: "June 24, 2025 08:00:01"
                         val dateFormatter = SimpleDateFormat("MMMM d, yyyy HH:mm:ss", Locale.US)
-
-                        // Set Time In & Out Labels
                         binding.timeInLblTv.text = "Time In: ${dateFormatter.format(latestResidency.timeIn)}"
                         binding.timeOutLblTv.text = "Time Out: ${dateFormatter.format(latestResidency.timeOut)}"
 
-                        // Calculate Total Duration
                         val diffMillis = latestResidency.timeOut.time - latestResidency.timeIn.time
                         val totalSeconds = diffMillis / 1000
-
                         val hours = totalSeconds / 3600
                         val minutes = (totalSeconds % 3600) / 60
                         val seconds = totalSeconds % 60
 
                         binding.totalHoursLblTv.text = "Total Hours: ${hours}h ${minutes}m ${seconds}s"
                     } else {
-                        // No history found
                         binding.timeInLblTv.text = "Time In: --"
                         binding.timeOutLblTv.text = "Time Out: --"
                         binding.totalHoursLblTv.text = "Total Hours: --"
@@ -152,21 +158,22 @@ class LogResidencyTimeInActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // Geofence Check (Uncomment for production)
-            /*
+            // 1. Force a manual location check when button is clicked
+            checkCurrentLocation()
+
+            // 2. Check the flag (which might have just been updated)
             if (!isInsideGeofence) {
                 Toast.makeText(this, "You must be inside the office to Time In!", Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
-            */
 
+            // 3. Proceed to Database
             lifecycleScope.launch {
                 try {
                     val newResidency = ResidencyHoursController.createNewResidency(Date(), userId)
                     if (newResidency != null) {
                         Toast.makeText(this@LogResidencyTimeInActivity, "Time In Successful!", Toast.LENGTH_SHORT).show()
 
-                        // Navigate to Time Out Screen
                         val intent = Intent(this@LogResidencyTimeInActivity, LogResidencyTimeOutActivity::class.java)
                         intent.putExtra("RESIDENCY_ID", newResidency.id)
                         startActivity(intent)
@@ -201,7 +208,28 @@ class LogResidencyTimeInActivity : AppCompatActivity() {
         }
     }
 
-    // --- HELPER FUNCTIONS ---
+    private fun checkCurrentLocation() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return
+        }
+
+        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+        // Get the last known location (Fastest method)
+        fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+            if (location != null) {
+                val targetLocation = Location("target")
+                targetLocation.latitude = TARGET_LAT
+                targetLocation.longitude = TARGET_LNG
+
+                val distance = location.distanceTo(targetLocation)
+
+                // Update the flag based on actual calculation
+                isInsideGeofence = distance <= TARGET_RADIUS
+
+            }
+        }
+    }
 
     private fun startRealTimeClock() {
         lifecycleScope.launch {
@@ -209,7 +237,7 @@ class LogResidencyTimeInActivity : AppCompatActivity() {
                 val formatter = SimpleDateFormat("MMMM d, yyyy, hh:mm:ss a", Locale.US)
                 val currentTime = formatter.format(Date())
                 binding.presentTimeTv.text = currentTime
-                delay(1000) // Updates every second
+                delay(1000)
             }
         }
     }
@@ -251,16 +279,18 @@ class LogResidencyTimeInActivity : AppCompatActivity() {
             locationPermissionLauncher.launch(notGranted.toTypedArray())
         } else {
             setupGeofence()
+            checkCurrentLocation() // Check on startup
         }
     }
 
     private fun setupGeofence() {
+        // Using the Constants defined at the top
         val geofence = Geofence.Builder()
-            .setRequestId("HX7V_H8_Manila")
+            .setRequestId(GEOLOCATION)
             .setCircularRegion(
-                14.60355,     // latitude
-                120.98227,    // longitude
-                80f           // radius in meters
+                TARGET_LAT,
+                TARGET_LNG,
+                TARGET_RADIUS
             )
             .setExpirationDuration(Geofence.NEVER_EXPIRE)
             .setTransitionTypes(
