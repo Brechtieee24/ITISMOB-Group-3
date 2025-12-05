@@ -16,7 +16,6 @@ import com.mobdeve.s16.group3.albrechtgabriel.lovelink.model.ResidencyHoursContr
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
-import java.util.Calendar
 
 class ProfileActivity : AppCompatActivity() {
 
@@ -35,7 +34,6 @@ class ProfileActivity : AppCompatActivity() {
         uri?.let {
             selectedImageUri = it
             binding.profilePictureIv.setImageURI(it)
-            // FOR FUTURE RELEASE
             Toast.makeText(this, "Photo updated! Remember to save changes.", Toast.LENGTH_SHORT).show()
         }
     }
@@ -48,7 +46,7 @@ class ProfileActivity : AppCompatActivity() {
         // Hide navbar menu initially
         binding.navbar.navBarContainerLnr.visibility = View.GONE
 
-        // Initialize adapters
+        // Initialize adapters with empty lists
         monthlyResidencyAdapter = MonthlyResidencyAdapter(monthlyResidencyList)
         binding.monthlyResidencyRecyclerview.layoutManager = LinearLayoutManager(this)
         binding.monthlyResidencyRecyclerview.adapter = monthlyResidencyAdapter
@@ -81,7 +79,6 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun loadProfileData() {
-        // 1. Get User ID from SharedPreferences
         val userId = getSharedPreferences("prefs", MODE_PRIVATE).getString("user_id", null)
 
         if (userId == null) {
@@ -93,7 +90,7 @@ class ProfileActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                // --- A. Fetch User Info ---
+                // Fetch User Info
                 val user = UserController.getUserById(userId)
 
                 if (user != null) {
@@ -107,13 +104,12 @@ class ProfileActivity : AppCompatActivity() {
                     val bio = if(user.aboutInfo.isNotEmpty()) user.aboutInfo else "No bio yet."
                     binding.profileBioTv.text = bio
                     binding.profileBioEt.setText(bio)
-
                     originalBioText = bio
 
-                    // --- B. Fetch Residency Data (Dynamic Calculation) ---
+                    // Load dynamic residency data
                     loadResidencyData(userId)
 
-                    // --- C. Fetch Activity Data ---
+                    // Load dynamic activity data
                     loadActivityData(userId)
 
                 } else {
@@ -127,56 +123,77 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private suspend fun loadResidencyData(userId: String) {
-        // Fetch raw logs
-        val logs = ResidencyHoursController.getMemberResidency(userId)
+        try {
+            // Fetch raw logs from Firestore
+            val logs = ResidencyHoursController.getMemberResidency(userId)
 
-        // Clear list
-        monthlyResidencyList.clear()
+            // Clear existing list
+            monthlyResidencyList.clear()
 
-        if (logs.isNotEmpty()) {
-            // Map to store month -> totalMinutes
-            val monthlyTotals = mutableMapOf<String, Int>()
-            val monthFormatter = SimpleDateFormat("MMM", Locale.US) // "Jan", "Feb"
+            if (logs.isNotEmpty()) {
+                // Map to store month-year -> totalMinutes
+                val monthlyTotals = mutableMapOf<String, Int>()
+                val monthFormatter = SimpleDateFormat("MMM yyyy", Locale.US) // "Oct 2025"
 
-            for (log in logs) {
-                // Only process completed logs
-                if (log.timeOut.time > 0) {
-                    val monthName = monthFormatter.format(log.timeIn)
+                for (log in logs) {
+                    // Only process completed logs (timeOut must be set)
+                    if (log.timeOut.time > 0) {
+                        val monthKey = monthFormatter.format(log.timeIn)
 
-                    val diffMillis = log.timeOut.time - log.timeIn.time
-                    val minutes = (diffMillis / (1000 * 60)).toInt()
+                        val diffMillis = log.timeOut.time - log.timeIn.time
+                        val minutes = (diffMillis / (1000 * 60)).toInt()
 
-                    val currentTotal = monthlyTotals.getOrDefault(monthName, 0)
-                    monthlyTotals[monthName] = currentTotal + minutes
+                        val currentTotal = monthlyTotals.getOrDefault(monthKey, 0)
+                        monthlyTotals[monthKey] = currentTotal + minutes
+                    }
+                }
+
+                // Sort by date (most recent first)
+                val sortedMonths = monthlyTotals.entries.sortedByDescending {
+                    SimpleDateFormat("MMM yyyy", Locale.US).parse(it.key)?.time ?: 0L
+                }
+
+                // Convert to MonthlyResidency objects
+                for (entry in sortedMonths) {
+                    // Extract just the month abbreviation for display
+                    val monthAbbr = entry.key.split(" ")[0] // "Oct" from "Oct 2025"
+                    monthlyResidencyList.add(MonthlyResidency(monthAbbr, entry.value))
                 }
             }
 
-            // Convert Map to List and Add to Adapter
-            monthlyTotals.forEach { (month, minutes) ->
-                monthlyResidencyList.add(MonthlyResidency(month, minutes))
+            // Show empty state if no data
+            if (monthlyResidencyList.isEmpty()) {
+                monthlyResidencyList.add(MonthlyResidency("No Data", 0))
             }
-        } else {
-            // Optional: Add empty state placeholders if needed
-            monthlyResidencyList.add(MonthlyResidency("No Data", 0))
-        }
 
-        monthlyResidencyAdapter.notifyDataSetChanged()
+            monthlyResidencyAdapter.notifyDataSetChanged()
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(this@ProfileActivity, "Error loading residency data", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private suspend fun loadActivityData(userId: String) {
-        val events = ActivityParticipationController.getEventsOfUser(userId)
+        try {
+            val events = ActivityParticipationController.getEventsOfUser(userId)
 
-        activityList.clear()
+            activityList.clear()
 
-        for (event in events) {
-            activityList.add("${event.eventName} (${event.date})")
+            for (event in events) {
+                activityList.add("${event.eventName} (${event.date})")
+            }
+
+            if (activityList.isEmpty()) {
+                activityList.add("No activities yet.")
+            }
+
+            activityAdapter.notifyDataSetChanged()
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(this@ProfileActivity, "Error loading activity data", Toast.LENGTH_SHORT).show()
         }
-
-        if (activityList.isEmpty()) {
-            activityList.add("No activities yet.")
-        }
-
-        activityAdapter.notifyDataSetChanged()
     }
 
     private fun enterEditMode() {
@@ -207,18 +224,16 @@ class ProfileActivity : AppCompatActivity() {
             return
         }
 
-        // Save to Firestore using coroutine
         lifecycleScope.launch {
             try {
                 val email = UserController.getUserById(userId)?.email ?: ""
-                // Using the updated Controller function that takes docId
                 val updatedUser = UserController.updateAboutInfo(email, newBioText)
 
                 if (updatedUser != null) {
                     binding.profileBioTv.text = newBioText
                     originalBioText = newBioText
                     Toast.makeText(this@ProfileActivity, "Profile saved successfully", Toast.LENGTH_SHORT).show()
-                    exitEditMode() // Only exit if save was successful
+                    exitEditMode()
                 } else {
                     Toast.makeText(this@ProfileActivity, "Failed to update profile", Toast.LENGTH_SHORT).show()
                 }

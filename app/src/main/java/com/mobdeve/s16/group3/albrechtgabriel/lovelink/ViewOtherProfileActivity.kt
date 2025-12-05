@@ -7,7 +7,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mobdeve.s16.group3.albrechtgabriel.lovelink.controller.UserController
 import com.mobdeve.s16.group3.albrechtgabriel.lovelink.databinding.ViewOtherProfilePageBinding
+import com.mobdeve.s16.group3.albrechtgabriel.lovelink.model.ActivityParticipationController
+import com.mobdeve.s16.group3.albrechtgabriel.lovelink.model.ResidencyHoursController
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class ViewOtherProfileActivity : AppCompatActivity() {
     private lateinit var binding: ViewOtherProfilePageBinding
@@ -16,6 +20,8 @@ class ViewOtherProfileActivity : AppCompatActivity() {
     private lateinit var monthlyResidencyAdapter: MonthlyResidencyAdapter
 //    private lateinit var monthlyResidencyList: ArrayList<MonthlyResidency>
     private var isOfficer: Boolean = false
+    private var activityList: ArrayList<String> = arrayListOf()
+    private var monthlyResidencyList: ArrayList<MonthlyResidency> = arrayListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,7 +64,8 @@ class ViewOtherProfileActivity : AppCompatActivity() {
 //                } else View.VISIBLE
 //        }
 
-//        setupRecyclerViews()
+        // Initialize adapters
+        setupRecyclerViews()
         loadMemberData(memberEmail)
 
         binding.returnBtn.setOnClickListener {
@@ -67,16 +74,16 @@ class ViewOtherProfileActivity : AppCompatActivity() {
     }
 
     // This new function safely initializes the adapters.
-//    private fun setupRecyclerViews() {
-//        // Initialize adapters with empty lists to prevent the crash
-//        monthlyResidencyAdapter = MonthlyResidencyAdapter(arrayListOf())
-//        binding.otherMonthlyResidencyRecyclerview.layoutManager = LinearLayoutManager(this)
-//        binding.otherMonthlyResidencyRecyclerview.adapter = monthlyResidencyAdapter
-//
-//        activityAdapter = ProfileActivityAdapter(arrayListOf())
-//        binding.otherActivitiesListRecyclerview.layoutManager = LinearLayoutManager(this)
-//        binding.otherActivitiesListRecyclerview.adapter = activityAdapter
-//    }
+    private fun setupRecyclerViews() {
+        monthlyResidencyAdapter = MonthlyResidencyAdapter(monthlyResidencyList)
+        binding.otherMonthlyResidencyRecyclerview.layoutManager = LinearLayoutManager(this)
+        binding.otherMonthlyResidencyRecyclerview.adapter = monthlyResidencyAdapter
+
+        activityAdapter = ProfileActivityAdapter(activityList)
+        binding.otherActivitiesListRecyclerview.layoutManager = LinearLayoutManager(this)
+        binding.otherActivitiesListRecyclerview.adapter = activityAdapter
+    }
+
 
     private fun loadMemberData(email: String) {
         lifecycleScope.launch {
@@ -85,6 +92,24 @@ class ViewOtherProfileActivity : AppCompatActivity() {
             if (user != null) {
                 binding.otherProfileNameTv.text = "${user.firstName} ${user.lastName} (${user.committee})"
                 binding.otherProfileBioTv.text = user.aboutInfo
+
+                // FIX: Use the user's Firestore document ID, not email
+                // The user.id should contain the document ID from Firestore
+                val userId = user.id
+
+                if (userId.isNotEmpty()) {
+                    // Load residency data using the Firestore document ID
+                    loadResidencyData(userId)
+
+                    // Load activity data using the Firestore document ID
+                    loadActivityData(userId)
+                } else {
+                    Toast.makeText(
+                        this@ViewOtherProfileActivity,
+                        "User ID not found.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
 
                 // Create the dummy lists
 //                val monthlyResidencyList = arrayListOf(
@@ -108,4 +133,71 @@ class ViewOtherProfileActivity : AppCompatActivity() {
             }
         }
     }
+
+    private suspend fun loadResidencyData(userId: String) {
+        try {
+            val logs = ResidencyHoursController.getMemberResidency(userId)
+
+            monthlyResidencyList.clear()
+
+            if (logs.isNotEmpty()) {
+                val monthlyTotals = mutableMapOf<String, Int>()
+                val monthFormatter = SimpleDateFormat("MMM yyyy", Locale.US)
+
+                for (log in logs) {
+                    if (log.timeOut.time > 0) {
+                        val monthKey = monthFormatter.format(log.timeIn)
+                        val diffMillis = log.timeOut.time - log.timeIn.time
+                        val minutes = (diffMillis / (1000 * 60)).toInt()
+
+                        val currentTotal = monthlyTotals.getOrDefault(monthKey, 0)
+                        monthlyTotals[monthKey] = currentTotal + minutes
+                    }
+                }
+
+                // Sort by date (most recent first)
+                val sortedMonths = monthlyTotals.entries.sortedByDescending {
+                    monthFormatter.parse(it.key)?.time ?: 0L
+                }
+
+                for (entry in sortedMonths) {
+                    val monthAbbr = entry.key.split(" ")[0]
+                    monthlyResidencyList.add(MonthlyResidency(monthAbbr, entry.value))
+                }
+            }
+
+            if (monthlyResidencyList.isEmpty()) {
+                monthlyResidencyList.add(MonthlyResidency("No Data", 0))
+            }
+
+            monthlyResidencyAdapter.notifyDataSetChanged()
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(this@ViewOtherProfileActivity, "Error loading residency data", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private suspend fun loadActivityData(userId: String) {
+        try {
+            val events = ActivityParticipationController.getEventsOfUser(userId)
+
+            activityList.clear()
+
+            for (event in events) {
+                activityList.add("${event.eventName} (${event.date})")
+            }
+
+            if (activityList.isEmpty()) {
+                activityList.add("No activities yet.")
+            }
+
+            activityAdapter.notifyDataSetChanged()
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(this@ViewOtherProfileActivity, "Error loading activity data", Toast.LENGTH_SHORT).show()
+        }
+    }
+
 }
