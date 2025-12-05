@@ -239,10 +239,10 @@ class HomeActivity : AppCompatActivity() {
                         }
                     }
                     .addOnFailureListener {
-                        // Handle failure
+                        //
                     }
                     .addOnCompleteListener {
-                        imageProxy.close() // Important: Close frame to allow next one
+                        imageProxy.close() // Close frame to allow next one
                     }
             } else {
                 imageProxy.close()
