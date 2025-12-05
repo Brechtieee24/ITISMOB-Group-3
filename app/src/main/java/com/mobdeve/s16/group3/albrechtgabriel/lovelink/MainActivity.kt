@@ -81,7 +81,7 @@ class MainActivity : AppCompatActivity() {
                                 // Save to old prefs (for compatibility with existing code)
                                 val sharedPreferences = getSharedPreferences("prefs", Context.MODE_PRIVATE)
                                 with(sharedPreferences.edit()) {
-                                    putString("user_id", userEmail) // Use email as ID
+                                    putString("user_id", user.id) // Use email as ID
                                     apply()
                                 }
 

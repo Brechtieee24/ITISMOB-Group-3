@@ -10,7 +10,6 @@ import org.threeten.bp.format.TextStyle
 import java.util.Date
 import java.util.Locale
 
-
 object ResidencyHoursController {
 
     private val db = FirebaseFirestore.getInstance()

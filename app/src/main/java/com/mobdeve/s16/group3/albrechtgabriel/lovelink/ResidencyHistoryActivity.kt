@@ -30,10 +30,12 @@ class ResidencyHistoryActivity : AppCompatActivity() {
         binding.navbar.navBarContainerLnr.visibility = View.GONE
         callerActivity = intent.getStringExtra("CALLER_ACTIVITY")
 
+        // 1. SETUP ADAPTER FIRST (It uses the empty list we initialized above)
         residencyAdapter = ResidencyHistoryAdapter(residencyList)
         binding.residencyHistoryRecyclerview.layoutManager = LinearLayoutManager(this)
         binding.residencyHistoryRecyclerview.adapter = residencyAdapter
 
+        // 2. FETCH DATA SECOND (This will fill the list and update the adapter)
         loadResidencyData()
 
         binding.navbar.menuIconNavImgbtn.setOnClickListener {
