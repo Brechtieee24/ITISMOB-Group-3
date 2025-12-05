@@ -17,7 +17,6 @@ object NavbarManager {
         val pfpButton = activity.findViewById<ImageButton>(R.id.pfp_holder_imgbtn)
 
         val homeBtn = activity.findViewById<ImageView>(R.id.nav_home_btn)
-        val residencyBtn = activity.findViewById<ImageView>(R.id.nav_residency_btn)
         val activitiesBtn = activity.findViewById<ImageView>(R.id.nav_acts_btn)
         val membersBtn = activity.findViewById<ImageView>(R.id.nav_members_btn)
 
@@ -28,7 +27,10 @@ object NavbarManager {
 
         pfpButton?.setOnClickListener {
             if (context !is ProfileActivity) {
-                context.startActivity(Intent(context, ProfileActivity::class.java))
+                val intent = Intent(context, ProfileActivity::class.java).apply {
+                    putExtra("IS_OFFICER", isOfficer)
+                }
+                context.startActivity(intent)
             }
         }
 
@@ -41,14 +43,6 @@ object NavbarManager {
                     putExtra("IS_OFFICER", isOfficer)
                 }
                 context.startActivity(intent)
-            }
-        }
-
-        // RESIDENCY //TODO: Add the residency
-        residencyBtn?.setOnClickListener {
-            // This is a placeholder, a better logic would be needed here like in your HomeActivity
-            if (context !is LogResidencyTimeInActivity && context !is LogResidencyTimeOutActivity) {
-                context.startActivity(Intent(context, HomeActivity::class.java)) // Go home to decide
             }
         }
 
