@@ -79,6 +79,18 @@ dependencies {
     // QR Generator
     implementation("com.google.zxing:core:3.5.1")
 
+    // CameraX
+    val cameraVersion = "1.3.0" // You can also use "1.4.0" if available
+
+    // 1. The Core Camera Logic
+    implementation("androidx.camera:camera-core:$cameraVersion")
+    implementation("androidx.camera:camera-camera2:$cameraVersion")
+    implementation("androidx.camera:camera-lifecycle:$cameraVersion")
+    implementation("androidx.camera:camera-view:$cameraVersion")
+
+    // 3. ML Kit for scanning
+    implementation("com.google.mlkit:barcode-scanning:17.2.0")
+
     // Coroutine support for Firebase tasks
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
 
