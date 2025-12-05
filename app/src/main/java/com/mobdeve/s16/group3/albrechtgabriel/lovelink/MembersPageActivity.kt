@@ -94,11 +94,7 @@ class MembersPageActivity : AppCompatActivity() {
             val maxHours = maxHoursText.toIntOrNull()
 
             if (minHours != null && maxHours != null && minHours > maxHours) {
-                Toast.makeText(
-                    this,
-                    "Min hours cannot be greater than Max hours.",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(this, "Min hours cannot be greater than Max hours.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             loadMembers(committeeName, minHours, maxHours)

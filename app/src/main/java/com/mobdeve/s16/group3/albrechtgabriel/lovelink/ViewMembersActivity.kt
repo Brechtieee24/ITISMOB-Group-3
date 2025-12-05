@@ -17,6 +17,8 @@ class ViewMembersActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ViewMembersPageBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        NavbarManager.setupNavBar(this)
+
 
         //  NEW: Get isOfficer from Intent OR SharedPreferences (fallback)
         isOfficer = intent.getBooleanExtra("IS_OFFICER", false)
@@ -25,16 +27,16 @@ class ViewMembersActivity : AppCompatActivity() {
             isOfficer = UserPreferences.isOfficer(this)
         }
 
-        binding.navbar.navBarContainerLnr.visibility = View.GONE
-
-        // Show/hide nav bar options
-        binding.navbar.menuIconNavImgbtn.setOnClickListener {
-            val menuSection = binding.navbar.navBarContainerLnr
-            menuSection.visibility =
-                if (menuSection.visibility == View.VISIBLE) {
-                    View.GONE
-                } else View.VISIBLE
-        }
+//        binding.navbar.navBarContainerLnr.visibility = View.GONE
+//
+//        // Show/hide nav bar options
+//        binding.navbar.menuIconNavImgbtn.setOnClickListener {
+//            val menuSection = binding.navbar.navBarContainerLnr
+//            menuSection.visibility =
+//                if (menuSection.visibility == View.VISIBLE) {
+//                    View.GONE
+//                } else View.VISIBLE
+//        }
 
         binding.returnbtn.setOnClickListener {
             finish()

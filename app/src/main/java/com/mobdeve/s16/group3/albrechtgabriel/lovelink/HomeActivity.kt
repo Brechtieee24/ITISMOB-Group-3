@@ -28,6 +28,8 @@ class HomeActivity : AppCompatActivity() {
             isOfficer = UserPreferences.isOfficer(this)
         }
 
+        logActivityDialogFlow()
+
         // Show correct button based on role
         if (isOfficer) {
             binding.logActivityHomeBtn.visibility = View.VISIBLE
@@ -80,12 +82,9 @@ class HomeActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // TODO for Josh: Navigate to Log Activity page
-        binding.logActivityHomeBtn.setOnClickListener {
-            // TODO: Add LogActivityActivity when implemented
-            // val intent = Intent(this, LogActivityActivity::class.java)
-            // startActivity(intent)
-        }
+//        binding.logActivityHomeBtn.setOnClickListener {
+//
+//        }
 
         binding.viewActivitiesBtn.setOnClickListener {
             val intent = Intent(this, ViewActivitiesActivity::class.java)
@@ -128,6 +127,40 @@ class HomeActivity : AppCompatActivity() {
                 if (menuSection.visibility == View.VISIBLE) {
                     View.GONE
                 } else View.VISIBLE
+        }
+    }
+
+    // TODO: Saving logic for both dialogs (Log Activity & QR Frame)
+    private fun logActivityDialogFlow() {
+        val logActivityContainer = binding.dialogLogActivityContainer
+        val qrFrameContainer = binding.dialogQrFrameContainer
+
+        val logActivityDialog = binding.logActivityDialog
+        val qrFrameDialog = binding.qrFrameDialog
+
+        binding.logActivityHomeBtn.setOnClickListener {
+            logActivityContainer.visibility = View.VISIBLE
+        }
+
+        logActivityDialog.closebtn.setOnClickListener {
+            logActivityContainer.visibility = View.GONE
+        }
+
+        logActivityDialog.confirmbtn.setOnClickListener {
+            logActivityContainer.visibility = View.GONE
+        }
+
+        logActivityDialog.scanQrBtn.setOnClickListener {
+            logActivityContainer.visibility = View.GONE
+            qrFrameContainer.visibility = View.VISIBLE
+        }
+
+        qrFrameDialog.closebtn.setOnClickListener {
+            qrFrameContainer.visibility = View.GONE // Just hide the QR frame
+        }
+
+        qrFrameDialog.confirmbtn.setOnClickListener {
+            qrFrameContainer.visibility = View.GONE
         }
     }
 }

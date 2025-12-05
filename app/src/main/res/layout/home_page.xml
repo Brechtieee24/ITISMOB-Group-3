@@ -40,7 +40,7 @@
             android:background="#14A866"
             android:backgroundTint="#AFC3BA"
             android:visibility="gone"
-            app:srcCompat="@drawable/logactivitybtn" />
+            app:srcCompat="@drawable/log_residency_btn_f" />
 
         <!-- MEMBER VIEW: Activity History Button -->
         <ImageButton
@@ -89,5 +89,47 @@
     <include
         android:id="@+id/navbar"
         layout="@layout/page_header" />
+
+    <FrameLayout
+        android:id="@+id/dialogLogActivityContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#99000000"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="gone">
+
+        <include
+            android:id="@+id/log_activity_dialog"
+            layout="@layout/dialog_log_activity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="32dp" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/dialogQrFrameContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#99000000"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="gone">
+
+        <include
+            android:id="@+id/qr_frame_dialog"
+            layout="@layout/dialog_qr_frame"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="32dp" />
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
