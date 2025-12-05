@@ -41,6 +41,12 @@ class HomeActivity : AppCompatActivity() {
     // Tracks unique IDs scanned in the current open session
     private val scannedSessionIds = mutableSetOf<String>()
 
+    // Tracks IDs currently being processed to prevent spam
+    private val processingIds = mutableSetOf<String>()
+
+    // NEW: Stores the ID of the event found via search
+    private var currentEventId: String? = null
+
     // Permission Launcher
     private val requestCameraPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -122,22 +128,49 @@ class HomeActivity : AppCompatActivity() {
             logActivityContainer.visibility = View.GONE
         }
 
-        // --- START SCANNING ---
+        // --- START SCANNING (Modified Logic) ---
         binding.logActivityDialog.scanQrBtn.setOnClickListener {
-            logActivityContainer.visibility = View.GONE
-            qrFrameContainer.visibility = View.VISIBLE
 
-            // 1. Reset the list and the counter when opening the scanner
-            scannedSessionIds.clear()
-            binding.qrFrameDialog.scannedParticipantsLabel.text = "Scanned Participants: 0"
+            // 1. Get the Activity Name from the EditText
+            val inputName = binding.logActivityDialog.activityNameAutoCompleteTextView.text.toString().trim()
 
-            checkPermissionAndStartCamera()
+            if (inputName.isEmpty()) {
+                Toast.makeText(this, "Please enter an Activity Name first.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // 2. Search Database for this Event
+            lifecycleScope.launch {
+                val foundEventId = findEventByName(inputName)
+
+                if (foundEventId != null) {
+                    // Success: Store the ID
+                    currentEventId = foundEventId
+                    Toast.makeText(this@HomeActivity, "Event Found! Starting Scanner...", Toast.LENGTH_SHORT).show()
+
+                    // 3. Switch Views
+                    logActivityContainer.visibility = View.GONE
+                    qrFrameContainer.visibility = View.VISIBLE
+
+                    // 4. Reset Lists
+                    scannedSessionIds.clear()
+                    processingIds.clear()
+                    binding.qrFrameDialog.scannedParticipantsLabel.text = "Scanned Participants: 0"
+
+                    // 5. Open Camera
+                    checkPermissionAndStartCamera()
+                } else {
+                    // Fail: Show Error
+                    Toast.makeText(this@HomeActivity, "Event '$inputName' not found.", Toast.LENGTH_LONG).show()
+                }
+            }
         }
 
         // --- CLOSE SCANNER ---
         binding.qrFrameDialog.closebtn.setOnClickListener {
             qrFrameContainer.visibility = View.GONE
-            stopCamera() // Stop processing to save battery
+            stopCamera()
+            currentEventId = null // Reset event ID
         }
 
         // --- CONFIRM BUTTON ---
@@ -145,6 +178,28 @@ class HomeActivity : AppCompatActivity() {
             qrFrameContainer.visibility = View.GONE
             stopCamera()
             Toast.makeText(this, "Session finished. Total: ${scannedSessionIds.size}", Toast.LENGTH_SHORT).show()
+            currentEventId = null // Reset event ID
+        }
+    }
+
+    // --- HELPER: Search Event by Name ---
+    private suspend fun findEventByName(name: String): String? {
+        return try {
+            val snapshot = FirebaseFirestore.getInstance()
+                .collection(EventConstants.EVENTS_COLLECTION)
+                .whereEqualTo("eventName", name) // Ensure field name matches DB exactly
+                .get()
+                .await()
+
+            if (!snapshot.isEmpty) {
+                // Return the ID of the first match
+                snapshot.documents[0].id
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
     }
 
@@ -164,47 +219,46 @@ class HomeActivity : AppCompatActivity() {
         cameraProviderFuture.addListener({
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
 
-            // 1. Preview (The visual feed)
             val preview = Preview.Builder().build().also {
-                // Attach the feed to your PreviewView in the layout
                 it.setSurfaceProvider(binding.qrFrameDialog.cameraPreview.surfaceProvider)
             }
 
-            // 2. Image Analysis (The QR Reader)
             val imageAnalyzer = ImageAnalysis.Builder()
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build()
                 .also {
                     it.setAnalyzer(cameraExecutor, QrCodeAnalyzer { qrCodeValue ->
-                        // CALLBACK WHEN QR FOUND
                         runOnUiThread {
-                            if (!scannedSessionIds.contains(qrCodeValue)) {
+                            // Check duplication & processing status
+                            if (!scannedSessionIds.contains(qrCodeValue) && !processingIds.contains(qrCodeValue)) {
 
-                                // 1. Add to set so we don't scan them again immediately
-                                scannedSessionIds.add(qrCodeValue)
+                                processingIds.add(qrCodeValue)
 
-                                // 2. Update the UI Counter
-                                binding.qrFrameDialog.scannedParticipantsLabel.text = "Scanned Participants: ${scannedSessionIds.size}"
+                                // Verify user exists, then save using currentEventId
+                                lifecycleScope.launch {
+                                    val userExists = checkUserExists(qrCodeValue)
 
-                                // 3. Feedback
-                                Toast.makeText(this, "ID Scanned!", Toast.LENGTH_SHORT).show()
+                                    if (userExists) {
+                                        scannedSessionIds.add(qrCodeValue)
+                                        binding.qrFrameDialog.scannedParticipantsLabel.text = "Scanned Participants: ${scannedSessionIds.size}"
+                                        Toast.makeText(this@HomeActivity, "ID Scanned & Logged!", Toast.LENGTH_SHORT).show()
 
-                                // 4. Save to DB
-                                saveActivityParticipation(qrCodeValue)
+                                        // Save to DB
+                                        saveActivityParticipation(qrCodeValue)
+                                    } else {
+                                        Toast.makeText(this@HomeActivity, "Invalid QR Code", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
                             }
                         }
                     })
                 }
 
-            // Select Back Camera
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
             try {
                 cameraProvider.unbindAll()
-                // Bind lifecycle
-                cameraProvider.bindToLifecycle(
-                    this, cameraSelector, preview, imageAnalyzer
-                )
+                cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalyzer)
             } catch (exc: Exception) {
                 Log.e("CAMERA", "Use case binding failed", exc)
             }
@@ -216,34 +270,31 @@ class HomeActivity : AppCompatActivity() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
         cameraProviderFuture.addListener({
             val cameraProvider = cameraProviderFuture.get()
-            cameraProvider.unbindAll() // Stops the camera
+            cameraProvider.unbindAll()
         }, ContextCompat.getMainExecutor(this))
     }
 
-    // --- QR ANALYZER CLASS ---
-    private class QrCodeAnalyzer(private val onQrFound: (String) -> Unit) : ImageAnalysis.Analyzer {
+    private suspend fun checkUserExists(userId: String): Boolean {
+        return try {
+            val doc = FirebaseFirestore.getInstance().collection("User").document(userId).get().await()
+            doc.exists()
+        } catch (e: Exception) { false }
+    }
 
+    private class QrCodeAnalyzer(private val onQrFound: (String) -> Unit) : ImageAnalysis.Analyzer {
         @OptIn(ExperimentalGetImage::class)
         override fun analyze(imageProxy: ImageProxy) {
             val mediaImage = imageProxy.image
             if (mediaImage != null) {
                 val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
                 val scanner = BarcodeScanning.getClient()
-
                 scanner.process(image)
                     .addOnSuccessListener { barcodes ->
                         for (barcode in barcodes) {
-                            barcode.rawValue?.let { value ->
-                                onQrFound(value) // Trigger callback
-                            }
+                            barcode.rawValue?.let { onQrFound(it) }
                         }
                     }
-                    .addOnFailureListener {
-                        //
-                    }
-                    .addOnCompleteListener {
-                        imageProxy.close() // Close frame to allow next one
-                    }
+                    .addOnCompleteListener { imageProxy.close() }
             } else {
                 imageProxy.close()
             }
@@ -252,29 +303,24 @@ class HomeActivity : AppCompatActivity() {
 
     // --- DATABASE LOGIC ---
     private fun saveActivityParticipation(memberId: String) {
-        lifecycleScope.launch {
-            try {
-                // 1. Get a valid Event ID (Just grabbing the first one for now)
-                val eventsSnapshot = FirebaseFirestore.getInstance()
-                    .collection(EventConstants.EVENTS_COLLECTION)
-                    .get()
-                    .await()
+        // We use the ID we found earlier
+        val eventId = currentEventId
 
-                val eventId = eventsSnapshot.documents.firstOrNull()?.id
-
-                if (eventId != null) {
+        if (eventId != null) {
+            lifecycleScope.launch {
+                try {
                     val result = ActivityParticipationController.addEventParticipation(memberId, eventId)
                     if (result != null) {
-                        Log.d("SCAN", "Saved $memberId")
+                        Log.d("SCAN", "Saved $memberId linked to event $eventId")
                     } else {
                         Toast.makeText(this@HomeActivity, "Failed to save to database.", Toast.LENGTH_SHORT).show()
                     }
-                } else {
-                    Toast.makeText(this@HomeActivity, "No Events found to link.", Toast.LENGTH_SHORT).show()
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
             }
+        } else {
+            Toast.makeText(this, "Error: No Event selected.", Toast.LENGTH_SHORT).show()
         }
     }
 
