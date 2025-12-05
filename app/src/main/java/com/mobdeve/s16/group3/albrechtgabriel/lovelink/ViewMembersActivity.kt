@@ -44,9 +44,6 @@ class ViewMembersActivity : AppCompatActivity() {
         }
 
         setupCommitteeClickListeners()
-
-        // Hide the temporary test button
-        binding.testViewProfileBtn.visibility = View.GONE
     }
 
     private fun setupCommitteeClickListeners() {
