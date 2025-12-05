@@ -6,12 +6,6 @@
     android:layout_height="match_parent"
     android:background="#B0C4BB">
 
-    <include
-        android:id="@+id/navbar"
-        layout="@layout/page_header"
-        tools:layout_editor_absoluteX="125dp"
-        tools:layout_editor_absoluteY="1dp" />
-
     <TextView
         android:id="@+id/committeeName"
         android:layout_width="wrap_content"
@@ -125,5 +119,11 @@
             android:layout_gravity="center"
             android:layout_margin="32dp" />
     </FrameLayout>
+
+    <include
+        android:id="@+id/navbar"
+        layout="@layout/page_header"
+        tools:layout_editor_absoluteX="125dp"
+        tools:layout_editor_absoluteY="1dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

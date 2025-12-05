@@ -4,65 +4,73 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.view.View
-import android.widget.Button
 import android.widget.ImageButton
-import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.core.view.isVisible
 
 object NavbarManager {
-    fun setupNavBar(context: Context) {
-        val activity = context as Activity
+    fun setupNavBar(context: Context, isOfficer: Boolean) {
+        val activity = context as? Activity ?: return
 
         val menuIconBtn = activity.findViewById<ImageButton>(R.id.menu_icon_nav_imgbtn)
         val navContainer = activity.findViewById<View>(R.id.nav_bar_container_lnr)
+        val pfpButton = activity.findViewById<ImageButton>(R.id.pfp_holder_imgbtn)
 
-        val homeBtn = activity.findViewById<Button>(R.id.nav_home_btn)
-        val residencyBtn = activity.findViewById<Button>(R.id.nav_residency_btn)
-        val activitiesBtn = activity.findViewById<Button>(R.id.nav_acts_btn)
-        val membersBtn = activity.findViewById<Button>(R.id.nav_members_btn)
-        val aboutBtn = activity.findViewById<Button>(R.id.nav_about_btn)
+        val homeBtn = activity.findViewById<ImageView>(R.id.nav_home_btn)
+        val residencyBtn = activity.findViewById<ImageView>(R.id.nav_residency_btn)
+        val activitiesBtn = activity.findViewById<ImageView>(R.id.nav_acts_btn)
+        val membersBtn = activity.findViewById<ImageView>(R.id.nav_members_btn)
 
+        // The menu button should always work
         menuIconBtn?.setOnClickListener {
-            if (navContainer != null) {
-                navContainer.visibility = if (navContainer.isVisible) View.GONE else View.VISIBLE
-            }
+            navContainer?.visibility = if (navContainer.isVisible) View.GONE else View.VISIBLE
         }
 
+        pfpButton?.setOnClickListener {
+            if (context !is ProfileActivity) {
+                context.startActivity(Intent(context, ProfileActivity::class.java))
+            }
+        }
 
         // HOME
         homeBtn?.setOnClickListener {
             if (context !is HomeActivity) {
-                context.startActivity(Intent(context, HomeActivity::class.java))
+                // Use flags to clear back stack and go to a fresh HomeActivity
+                val intent = Intent(context, HomeActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    putExtra("IS_OFFICER", isOfficer)
+                }
+                context.startActivity(intent)
             }
         }
 
-        // RESIDENCY (Maps to Log/History or Residency Page)
+        // RESIDENCY //TODO: Add the residency
         residencyBtn?.setOnClickListener {
-            // Update this class to your actual Residency Activity
-            if (context !is LogResidencyTimeInActivity) {
-                context.startActivity(Intent(context, LogResidencyTimeInActivity::class.java))
+            // This is a placeholder, a better logic would be needed here like in your HomeActivity
+            if (context !is LogResidencyTimeInActivity && context !is LogResidencyTimeOutActivity) {
+                context.startActivity(Intent(context, HomeActivity::class.java)) // Go home to decide
             }
         }
 
         // ACTIVITIES
         activitiesBtn?.setOnClickListener {
-            if (context !is ActivitiesPageActivity) {
-                context.startActivity(Intent(context, ActivitiesPageActivity::class.java))
+            if (context !is ViewActivitiesActivity) {
+                val intent = Intent(context, ViewActivitiesActivity::class.java).apply {
+                    putExtra("IS_OFFICER", isOfficer)
+                }
+                context.startActivity(intent)
             }
         }
 
         // MEMBERS
         membersBtn?.setOnClickListener {
-            if (context !is MembersPageActivity) {
-                context.startActivity(Intent(context, MembersPageActivity::class.java))
-            }
-        }
-
-        // ABOUT / PROFILE (Using "About" as Profile based on context, or change to AboutActivity)
-        aboutBtn?.setOnClickListener {
-            if (context !is ProfileActivity) {
-                context.startActivity(Intent(context, ProfileActivity::class.java))
+            if (context !is ViewMembersActivity) {
+                val intent = Intent(context, ViewMembersActivity::class.java).apply {
+                    putExtra("IS_OFFICER", isOfficer)
+                }
+                context.startActivity(intent)
             }
         }
     }
 }
+

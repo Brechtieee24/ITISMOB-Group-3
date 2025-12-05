@@ -7,13 +7,6 @@
     android:background="#B0C4BB"
     tools:context=".ActivityPage">
 
-    <include
-        android:id="@+id/navbar"
-        layout="@layout/page_header"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -124,4 +117,12 @@
             android:layout_margin="32dp" />
 
     </FrameLayout>
+
+    <include
+        android:id="@+id/navbar"
+        layout="@layout/page_header"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

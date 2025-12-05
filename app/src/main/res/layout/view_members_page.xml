@@ -6,12 +6,6 @@
     android:layout_height="match_parent"
     android:background="#B0C4BB">
 
-    <include
-        android:id="@+id/navbar"
-        layout="@layout/page_header"
-        tools:layout_editor_absoluteX="125dp"
-        tools:layout_editor_absoluteY="1dp" />
-
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
@@ -119,5 +113,12 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <include
+        android:id="@+id/navbar"
+        layout="@layout/page_header"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

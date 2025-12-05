@@ -23,6 +23,8 @@ class ActivitiesPageActivity : AppCompatActivity() {
         val eventId = intent.getStringExtra(ViewActivitiesActivity.EVENT_ID_KEY)
         val dialogView = binding.addDescDialog
 
+        NavbarManager.setupNavBar(this, isOfficer)
+
         if (!isOfficer) {
             binding.addDescriptionbtn.visibility = View.GONE
         }
@@ -54,15 +56,15 @@ class ActivitiesPageActivity : AppCompatActivity() {
             binding.dialogAddDescContainer.visibility = View.GONE
         }
 
-        binding.navbar.navBarContainerLnr.visibility = View.GONE
-        // Show/hide nav bar options
-        binding.navbar.menuIconNavImgbtn.setOnClickListener {
-            val menuSection = binding.navbar.navBarContainerLnr
-            menuSection.visibility =
-                if (menuSection.visibility == View.VISIBLE) {
-                    View.GONE
-                } else View.VISIBLE
-        }
+//        binding.navbar.navBarContainerLnr.visibility = View.GONE
+//        // Show/hide nav bar options
+//        binding.navbar.menuIconNavImgbtn.setOnClickListener {
+//            val menuSection = binding.navbar.navBarContainerLnr
+//            menuSection.visibility =
+//                if (menuSection.visibility == View.VISIBLE) {
+//                    View.GONE
+//                } else View.VISIBLE
+//        }
 
         binding.returnbtn.setOnClickListener {
             finish()

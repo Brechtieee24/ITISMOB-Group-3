@@ -53,82 +53,40 @@
         android:orientation="vertical"
         app:layout_constraintTop_toBottomOf="@+id/nav_bar_container_cns"
         tools:layout_editor_absoluteX="0dp"
-        tools:visibility="gone">
+        tools:visibility="gone"
+        android:visibility="gone">
 
-        <Button
+        <!-- Use ImageView for custom button assets -->
+        <ImageView
             android:id="@+id/nav_home_btn"
             android:layout_width="match_parent"
-            android:layout_height="37dp"
-            android:background="#6E787B"
-            android:backgroundTint="#225C6E"
-            android:backgroundTintMode="src_in"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:paddingLeft="5dp"
-            android:paddingTop="2dp"
-            android:paddingRight="5dp"
-            android:paddingBottom="2dp"
-            android:text="Home" />
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            app:srcCompat="@drawable/nav_home_btn" />
 
-        <Button
+        <ImageView
             android:id="@+id/nav_residency_btn"
             android:layout_width="match_parent"
-            android:layout_height="37dp"
-            android:background="#6E787B"
-            android:backgroundTint="#225C6E"
-            android:backgroundTintMode="src_in"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:paddingLeft="5dp"
-            android:paddingTop="2dp"
-            android:paddingRight="5dp"
-            android:paddingBottom="2dp"
-            android:text="Residency" />
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            app:srcCompat="@drawable/nav_residency_btn" />
 
-        <Button
+        <ImageView
             android:id="@+id/nav_acts_btn"
             android:layout_width="match_parent"
-            android:layout_height="37dp"
-            android:background="#6E787B"
-            android:backgroundTint="#225C6E"
-            android:backgroundTintMode="src_in"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:paddingLeft="5dp"
-            android:paddingTop="2dp"
-            android:paddingRight="5dp"
-            android:paddingBottom="2dp"
-            android:text="Activities" />
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            app:srcCompat="@drawable/nav_activities_btn" />
 
-        <Button
+        <ImageView
             android:id="@+id/nav_members_btn"
             android:layout_width="match_parent"
-            android:layout_height="37dp"
-            android:background="#6E787B"
-            android:backgroundTint="#225C6E"
-            android:backgroundTintMode="src_in"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:paddingLeft="5dp"
-            android:paddingTop="2dp"
-            android:paddingRight="5dp"
-            android:paddingBottom="2dp"
-            android:text="Members" />
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            app:srcCompat="@drawable/nav_members_btn" />
 
-        <Button
-            android:id="@+id/nav_about_btn"
-            android:layout_width="match_parent"
-            android:layout_height="37dp"
-            android:background="#6E787B"
-            android:backgroundTint="#225C6E"
-            android:backgroundTintMode="src_in"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:paddingLeft="5dp"
-            android:paddingTop="2dp"
-            android:paddingRight="5dp"
-            android:paddingBottom="2dp"
-            android:text="About" />
     </LinearLayout>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

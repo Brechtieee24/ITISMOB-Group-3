@@ -17,7 +17,6 @@ class ViewMembersActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ViewMembersPageBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        NavbarManager.setupNavBar(this)
 
 
         //  NEW: Get isOfficer from Intent OR SharedPreferences (fallback)
@@ -26,6 +25,8 @@ class ViewMembersActivity : AppCompatActivity() {
             // If not passed via intent, try SharedPreferences
             isOfficer = UserPreferences.isOfficer(this)
         }
+
+        NavbarManager.setupNavBar(this, isOfficer)
 
 //        binding.navbar.navBarContainerLnr.visibility = View.GONE
 //

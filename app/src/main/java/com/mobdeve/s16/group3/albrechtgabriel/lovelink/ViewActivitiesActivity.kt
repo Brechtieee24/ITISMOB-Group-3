@@ -29,6 +29,7 @@ class ViewActivitiesActivity : AppCompatActivity() {
         isOfficer = intent.getBooleanExtra("IS_OFFICER", false)
         val dialogView = binding.addEventDialog
 
+        NavbarManager.setupNavBar(this, isOfficer)
 
         if (!isOfficer) {
             binding.addEventbtn.visibility = View.GONE
@@ -42,15 +43,15 @@ class ViewActivitiesActivity : AppCompatActivity() {
             binding.dialogAddEventContainer.visibility = View.GONE
         }
 
-        binding.navbar.navBarContainerLnr.visibility = View.GONE
-        // Show/hide nav bar options
-        binding.navbar.menuIconNavImgbtn.setOnClickListener {
-            val menuSection = binding.navbar.navBarContainerLnr
-            menuSection.visibility =
-                if (menuSection.visibility == View.VISIBLE) {
-                    View.GONE
-                } else View.VISIBLE
-        }
+//        binding.navbar.navBarContainerLnr.visibility = View.GONE
+//        // Show/hide nav bar options
+//        binding.navbar.menuIconNavImgbtn.setOnClickListener {
+//            val menuSection = binding.navbar.navBarContainerLnr
+//            menuSection.visibility =
+//                if (menuSection.visibility == View.VISIBLE) {
+//                    View.GONE
+//                } else View.VISIBLE
+//        }
 
         dialogView.confirmbtn.setOnClickListener {
             val eventName = dialogView.activityNameEditText.text.toString().trim()
